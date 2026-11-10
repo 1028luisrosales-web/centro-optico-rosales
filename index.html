@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f2b46">
-<title>Centro Óptico Rosales v51 NUBE FIREBASE FIX MODAL</title>
+<title>Centro Óptico Rosales v52 NUBE FIREBASE FIX BOTON</title>
 <style>
 :root{--navy:#0f2b46;--navy2:#173a5e;--gold:#c9a86a;--bg:#f4f5f7;--card:#fff;--border:#e5e7eb;--muted:#6b7b8d;--faint:#9aa8b8;--danger:#c03a2b}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--navy);font-family:Inter,system-ui,sans-serif;height:100%}
@@ -78,7 +78,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 <div style="overflow:auto;background:var(--bg)" class="no-print smooth">
 <header style="height:56px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:10">
 <div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales</div><div style="display:none">v23 leyenda oculta</div></div>
-<div style="display:flex;gap:6px"><button class="btn btn-gold" onclick="newClient()">Nuevo</button><span id="cloudStatus" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;font-size:11px"><span id="cloudDot" class="cloud-dot local"></span><span id="cloudText">Modo Local</span></span><button id="btnNube" class="btn btn-white" style="font-size:11px;padding:8px 10px" onclick="try{document.getElementById('cloudModal').style.display='flex';var i=document.getElementById('cloudUrlInput');if(i){i.value=localStorage.getItem('rosales_cloud_url')||'';i.removeAttribute('readonly');i.removeAttribute('disabled');}}catch(e){alert('Error al abrir nube: '+e.message)}">☁️ Nube</button><button class="btn btn-white" onclick="document.getElementById('importFile').click()" style="font-size:11px;padding:8px 10px">📂 Importar</button><input type="file" id="importFile" accept=".json,.csv,.xls,.html" style="display:none" onchange="importOldFile(event)"><button class="btn btn-white" onclick="exportProfesional()">Exportar a Excel</button></div>
+<div style="display:flex;gap:6px"><button class="btn btn-gold" onclick="newClient()">Nuevo</button><span id="cloudStatus" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;font-size:11px"><span id="cloudDot" class="cloud-dot local"></span><span id="cloudText">Modo Local</span></span><button id="btnNube" class="btn btn-white" style="font-size:11px;padding:8px 10px" onclick="openCloudSetup()">☁️ Nube</button><button class="btn btn-white" onclick="document.getElementById('importFile').click()" style="font-size:11px;padding:8px 10px">📂 Importar</button><input type="file" id="importFile" accept=".json,.csv,.xls,.html" style="display:none" onchange="importOldFile(event)"><button class="btn btn-white" onclick="exportProfesional()">Exportar a Excel</button></div>
 </header>
 
 <div style="padding:16px;max-width:800px;margin:0 auto">
@@ -138,7 +138,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 <div style="margin-top:12px"><label>Observaciones anotadas (aparece en ambos tickets)</label><textarea id="observaciones" rows="3" placeholder="Anota observaciones del paciente, lugar de jornada, forma de pago, etc." oninput="onFormChange()"></textarea></div>
 
 <div style="display:flex;gap:8px;margin-top:14px;position:sticky;bottom:0;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);padding:10px 0">
-<button class="btn btn-navy" style="flex:1;padding:12px" onclick="save()">Guardar</button><button class="btn btn-white" style="padding:12px" onclick="try{document.getElementById('cloudModal').style.display='flex';}catch(e){alert(e.message)}">☁️ Nube</button>
+<button class="btn btn-navy" style="flex:1;padding:12px" onclick="save()">Guardar</button><button class="btn btn-white" style="padding:12px" onclick="openCloudSetup()">☁️ Nube</button>
 <button class="btn btn-white" style="display:none" onclick="newClient()">Cancelar</button>
 </div>
 
