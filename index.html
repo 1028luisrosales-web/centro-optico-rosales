@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f2b46">
-<title>Centro Óptico Rosales v55 LEE TU NOGALES</title>
+<title>Centro Óptico Rosales v56 FIX CLOUD_URL</title>
 <style>
 :root{--navy:#0f2b46;--navy2:#173a5e;--gold:#c9a86a;--bg:#f4f5f7;--card:#fff;--border:#e5e7eb;--muted:#6b7b8d;--faint:#9aa8b8;--danger:#c03a2b}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--navy);font-family:Inter,system-ui,sans-serif;height:100%}
@@ -194,6 +194,10 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 <div id="print-area" style="display:none"><div class="ticket-mono ticket-58mm" id="print-content" style="width:58mm"></div></div>
 
 <script>
+// FIREBASE al inicio para evitar TDZ
+var FIREBASE_URL = 'https://centro-optico-rosales-4b197-default-rtdb.firebaseio.com';
+var CLOUD_URL = FIREBASE_URL;
+
 const LS_KEY="centro_optico_rosales_v3", LS_OLD="centro_optico_rosales_v2";
 let patients=[], counter=1, filter="todos", editing=null, active="venta";
 
@@ -478,9 +482,9 @@ function exportJSON(){
 
 // ===== NUBE - TIEMPO REAL (igual UI, solo agrega sincronización) =====
 
-let cloudOnline = false;
+var cloudOnline = false;
 let cloudSyncing = false;
-let lastPush = 0;
+var lastPush = 0;
 function setCloudUI(state, text){
   let dot = document.getElementById('cloudDot');
   let txt = document.getElementById('cloudText');
@@ -775,15 +779,14 @@ function importOldFile(e){
 
 
 let _origPersist = persist;
-persist = function(){ _origPersist(); if(CLOUD_URL && Date.now()-lastPush>2000){ cloudPush(); } };
+persist = function(){ _origPersist(); try{ if(typeof CLOUD_URL !== 'undefined' && CLOUD_URL && typeof lastPush !== 'undefined' && Date.now()-lastPush>2000){ cloudPush(); } }catch(e){} };
 // Al cargar, intentar traer nube
-setTimeout(()=>{ if(CLOUD_URL){ cloudPull2(); } else { setCloudUI('local','Modo Local'); } }, 800);
+setTimeout(()=>{ try{ if(typeof CLOUD_URL !== 'undefined' && CLOUD_URL){ cloudPull2(); } else { setCloudUI('local','Modo Local'); } }catch(e){ setCloudUI('local','Modo Local'); } }, 800);
 
 load(); fecha.value=today(); renderList(); onFormChange();
 
 // ===== NUBE FIREBASE UNICA v49 =====
-let FIREBASE_URL = 'https://centro-optico-rosales-4b197-default-rtdb.firebaseio.com';
-let CLOUD_URL = FIREBASE_URL;
+
 try{ localStorage.setItem('rosales_firebase_url', FIREBASE_URL); }catch(e){}
 async function cloudPull2(){
   let inp = document.getElementById('cloudUrlInput');
