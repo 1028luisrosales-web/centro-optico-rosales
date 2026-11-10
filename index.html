@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f2b46">
-<title>Centro Óptico Rosales v53 IMPORTA XLSX</title>
+<title>Centro Óptico Rosales v55 LEE TU NOGALES</title>
 <style>
 :root{--navy:#0f2b46;--navy2:#173a5e;--gold:#c9a86a;--bg:#f4f5f7;--card:#fff;--border:#e5e7eb;--muted:#6b7b8d;--faint:#9aa8b8;--danger:#c03a2b}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--navy);font-family:Inter,system-ui,sans-serif;height:100%}
@@ -447,20 +447,22 @@ function exportProfesional(){
     let rows = patients.map(p=>{
       let saldo = safe(p.total,p.anticipo);
       let entrega = p.fechaEntrega || addDays(p.fecha,15);
-      return '<tr><td>'+esc(p.folio)+'</td><td><b>'+esc(p.nombre)+'</b></td><td>'+esc(p.telefono||'')+'</td><td>'+fmt(p.fecha)+'</td><td>'+fmt(entrega)+'</td><td>'+esc(p.armazon?.modelo||'')+'</td><td>'+esc(p.tratamiento||'')+'</td><td>OD / '+formatGraduacion(p.od)+'</td><td>'+fmtGradAdd(p.od?.add)+'</td><td>OI / '+formatGraduacion(p.oi)+'</td><td>'+fmtGradAdd(p.oi?.add)+'</td><td>'+num(p.total)+'</td><td>'+num(p.anticipo)+'</td><td><b>'+saldo+'</b></td><td>'+esc(p.estado||'')+'</td><td>'+esc(p.observaciones||'')+'</td></tr>';
+      let odEsf = fmtGradNum(p.od?.esfera); let odCil = fmtGradNum(p.od?.cilindro); let odEje = p.od?.eje||'0'; let odAdd = fmtGradAdd(p.od?.add);
+      let oiEsf = fmtGradNum(p.oi?.esfera); let oiCil = fmtGradNum(p.oi?.cilindro); let oiEje = p.oi?.eje||'0'; let oiAdd = fmtGradAdd(p.oi?.add);
+      return '<tr><td>'+esc(p.folio)+'</td><td><b>'+esc(p.nombre)+'</b></td><td>'+esc(p.telefono||'')+'</td><td>'+fmt(p.fecha)+'</td><td>'+fmt(entrega)+'</td><td>'+esc(p.armazon?.modelo||'')+'</td><td>'+esc(p.tratamiento||'')+'</td><td data-grad-esf="'+odEsf+'">'+odEsf+'</td><td>'+odCil+'</td><td>'+odEje+'</td><td>'+odAdd+'</td><td>'+oiEsf+'</td><td>'+oiCil+'</td><td>'+oiEje+'</td><td>'+oiAdd+'</td><td data-total="'+num(p.total)+'">'+num(p.total)+'</td><td>'+num(p.anticipo)+'</td><td><b>'+saldo+'</b></td><td>'+esc(p.estado||'')+'</td><td>'+esc(p.observaciones||'')+'</td></tr>';
     }).join('');
     let excelHtml = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Reporte Rosales</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--><style>table{border-collapse:collapse;font-family:Calibri,Arial}th{background:#0F2B46;color:#FFFFFF;padding:8px;border:1px solid #999;font-size:11px}td{padding:6px;border:1px solid #999;font-size:11px}.title{font-size:18px;font-weight:bold;color:#0F2B46}.sub{font-size:11px;color:#666}</style></head><body>'
       + '<div class="title">CENTRO ÓPTICO ROSALES</div><div class="sub">Reporte Detallado de Ventas y Laboratorio &bull; Fecha: '+fechaHoy+' &bull; WhatsApp: 5561003636, 5551565146 &bull; Tel: 5560193379, 5577123851 &bull; Total pacientes: '+patients.length+'</div><br>'
-      + '<table><thead><tr><th>Folio</th><th>Paciente</th><th>Telefono</th><th>Fecha Venta</th><th>Fecha Entrega</th><th>Armazon</th><th>Tratamiento</th><th>Graduacion OD</th><th>ADD OD</th><th>Graduacion OI</th><th>ADD OI</th><th>Total</th><th>Anticipo</th><th>Saldo</th><th>Estado</th><th>Observaciones</th></tr></thead><tbody>'+rows+'</tbody></table><br>'
+      + '<table><thead><tr><th>Folio</th><th>Paciente</th><th>Telefono</th><th>Fecha Venta</th><th>Fecha Entrega</th><th>Armazon</th><th>Tratamiento</th><th>Esfera OD</th><th>Cilindro OD</th><th>Eje OD</th><th>ADD OD</th><th>Esfera OI</th><th>Cilindro OI</th><th>Eje OI</th><th>ADD OI</th><th>Total</th><th>Anticipo</th><th>Saldo</th><th>Estado</th><th>Observaciones</th></tr></thead><tbody>'+rows+'</tbody></table><br>'
       + '<table><tr><td style="font-weight:bold">TOTAL VENTA</td><td>$'+totalVenta+' MXN</td></tr><tr><td style="font-weight:bold">TOTAL ANTICIPO</td><td>$'+totalAnt+' MXN</td></tr><tr><td style="font-weight:bold;background:#0F2B46;color:#fff">TOTAL SALDO</td><td style="font-weight:bold">$'+totalSaldo+' MXN</td></tr></table>'
       + '<br><div style="font-size:10px;color:#999">Centro Óptico Rosales &bull; Dudas: WhatsApp 5561003636, 5551565146 &bull; Generado el '+fechaHoy+'</div></body></html>';
     let blob = new Blob(['\uFEFF' + excelHtml], {type:'application/vnd.ms-excel;charset=utf-8'});
     let url = URL.createObjectURL(blob);
     let a = document.createElement('a'); a.href=url; a.download='Reporte-Rosales-'+today()+'.xls'; document.body.appendChild(a); a.click(); setTimeout(()=>{ document.body.removeChild(a); URL.revokeObjectURL(url); }, 800);
     // También CSV por compatibilidad
-    let csvHeader = ["Folio","Nombre","Telefono","Fecha Venta","Fecha Entrega","Armazon","Tratamiento","Graduacion OD","ADD OD","Graduacion OI","ADD OI","Total","Anticipo","Saldo","Estado","Observaciones"];
+    let csvHeader = ["Folio","Nombre","Telefono","Fecha Venta","Fecha Entrega","Armazon","Tratamiento","Esfera OD","Cilindro OD","Eje OD","ADD OD","Esfera OI","Cilindro OI","Eje OI","ADD OI","Total","Anticipo","Saldo","Estado","Observaciones"];
     let escCsv = s => '"' + (s||'').toString().replace(/"/g,'""') + '"';
-    let csvRows = patients.map(p=> [p.folio, escCsv(p.nombre), p.telefono, p.fecha, p.fechaEntrega||addDays(p.fecha,15), escCsv(p.armazon?.modelo), escCsv(p.tratamiento), 'OD / ' + formatGraduacion(p.od), fmtGradAdd(p.od?.add), 'OI / ' + formatGraduacion(p.oi), fmtGradAdd(p.oi?.add), p.total, p.anticipo, safe(p.total,p.anticipo), p.estado, escCsv(p.observaciones)].join(","));
+    let csvRows = patients.map(p=> [p.folio, escCsv(p.nombre), p.telefono, p.fecha, p.fechaEntrega||addDays(p.fecha,15), escCsv(p.armazon?.modelo), escCsv(p.tratamiento), fmtGradNum(p.od?.esfera), fmtGradNum(p.od?.cilindro), p.od?.eje||'0', fmtGradAdd(p.od?.add), fmtGradNum(p.oi?.esfera), fmtGradNum(p.oi?.cilindro), p.oi?.eje||'0', fmtGradAdd(p.oi?.add), p.total, p.anticipo, safe(p.total,p.anticipo), p.estado, escCsv(p.observaciones)].join(","));
     let csv = "\uFEFF" + [csvHeader.join(","), ...csvRows].join("\n");
     let blob2 = new Blob([csv], {type:'text/csv;charset=utf-8'});
     let url2 = URL.createObjectURL(blob2);
@@ -517,6 +519,82 @@ function parseGradStr(s){
   if(!m) return {esfera:'0',cilindro:'0',eje:'0',add:'0',alt:'0'};
   return {esfera:m[1],cilindro:m[2],eje:m[3],add:'0',alt:'0'};
 }
+
+
+function cleanCell(v){
+  if(v===null||v===undefined) return '';
+  if(typeof v === 'number'){
+    if(Number.isInteger(v)) return String(v);
+    return String(v);
+  }
+  let s = String(v).trim();
+  // Quitar comilla inicial que pone Google Sheets: 'COR-0052 -> COR-0052, '+0.25 -> +0.25
+  if(s.startsWith("'")) s = s.slice(1);
+  // Si es telefono como 6311926013.0 -> 6311926013
+  if(/^\d+\.0$/.test(s)) s = s.slice(0,-2);
+  return s.trim();
+}
+function findColByParts(headerRow, parts){
+  // parts: ej ['od','esfera'] -> busca columna que contenga TODAS las partes
+  let h = headerRow.map(c=>String(c||'').toLowerCase().replace(/[^a-z0-9]/g,''));
+  for(let i=0;i<h.length;i++){
+    let ok = true;
+    for(let part of parts){
+      let pp = part.toLowerCase().replace(/[^a-z0-9]/g,'');
+      if(!h[i].includes(pp)){ ok=false; break; }
+    }
+    if(ok) return i;
+  }
+  return -1;
+}
+function excelDateToISO(v){
+  if(v===null||v===undefined||v==='') return '';
+  if(v instanceof Date) return v.toISOString().slice(0,10);
+  if(typeof v === 'number' && v > 30000 && v < 60000){
+    let d = new Date((v-25569)*86400000);
+    return d.toISOString().slice(0,10);
+  }
+  let s = cleanCell(v);
+  // dd/mm/yyyy -> yyyy-mm-dd
+  let fm = s.match(/(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if(fm) return fm[3]+'-'+fm[2].padStart(2,'0')+'-'+fm[1].padStart(2,'0');
+  // yyyy-mm-dd ya
+  if(/^\d{4}-\d{2}-\d{2}/.test(s)) return s.slice(0,10);
+  // Si viene como "Mon Nov 05 2026..." de SheetJS
+  let d2 = new Date(s);
+  if(!isNaN(d2.getTime())) return d2.toISOString().slice(0,10);
+  return s;
+}
+
+function findColIndex(headerRow, names){
+  let h = headerRow.map(c=>String(c||'').toLowerCase().replace(/[^a-z0-9]/g,''));
+  for(let n of names){
+    let nn = n.toLowerCase().replace(/[^a-z0-9]/g,'');
+    let i = h.findIndex(x=>x===nn || x.includes(nn));
+    if(i>=0) return i;
+  }
+  return -1;
+}
+function parseGradCell(v){
+  // Acepta "-1.00", "+1.00", "OD / -1.00-4.00X180", "-1.00-4.00X180", "0"
+  if(v===null||v===undefined||v==='') return {esfera:'0',cilindro:'0',eje:'0',add:'0',alt:'0'};
+  let s = String(v).trim();
+  if(s.includes('X') || s.includes('x')){
+    return parseGradStr(s);
+  }
+  // Solo un numero -> es esfera
+  let n = parseFloat(s);
+  if(!isNaN(n)) return {esfera: String(n.toFixed(2)), cilindro:'0', eje:'0', add:'0', alt:'0'};
+  return {esfera:'0',cilindro:'0',eje:'0',add:'0',alt:'0'};
+}
+function parseMoneyCell(v){
+  if(v===null||v===undefined||v==='') return '0';
+  if(typeof v === 'number') return String(v);
+  let s = String(v).replace(/\$/g,'').replace(/MXN/gi,'').replace(/,/g,'').trim();
+  let n = parseFloat(s);
+  return isNaN(n) ? '0' : String(n);
+}
+
 function parseCSVLine(line){
   let out=[]; let cur=''; let inQ=false;
   for(let i=0;i<line.length;i++){ let c=line[i]; if(c=='"'){ if(inQ && line[i+1]=='"'){ cur+='"'; i++; } else inQ=!inQ; } else if(c==',' && !inQ){ out.push(cur); cur=''; } else cur+=c; }
@@ -534,25 +612,61 @@ function importXLSXFile(f, e){
       let rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
       // rows[0] es encabezado, resto son pacientes
       let arr = [];
+      let hdr = rows[0] || [];
+      // Mapeo por nombre - soporta los 3 formatos: NOGALES Google Sheets (OD_Esfera), nuevo separado (Esfera OD) y viejo combinado (Graduacion OD)
+      // Primero intentar formato NOGALES: OD_Esfera, OD_Cilindro, OD_Eje, OD_ADD, etc.
+      let cFolio = findColByParts(hdr, ['folio']); if(cFolio<0) cFolio = findColIndex(hdr, ['folio']); if(cFolio<0) cFolio=0;
+      let cNombre = findColByParts(hdr, ['nombre']); if(cNombre<0) cNombre = findColIndex(hdr, ['paciente','nombre']); if(cNombre<0) cNombre=1;
+      let cTel = findColByParts(hdr, ['telefono']); if(cTel<0) cTel = findColIndex(hdr, ['telefono','tel']); if(cTel<0) cTel=2;
+      let cWhats = findColByParts(hdr, ['whatsapp']); if(cWhats<0) cWhats=-1;
+      let cFecha = findColByParts(hdr, ['fecha']); if(cFecha<0) cFecha = findColIndex(hdr, ['fechaventa','fecha']); if(cFecha<0) cFecha=3;
+      let cEntrega = findColByParts(hdr, ['fecha','entrega']); if(cEntrega<0) cEntrega = findColIndex(hdr, ['fechaentrega','entrega']); if(cEntrega<0) cEntrega=-1;
+      let cArmazon = findColByParts(hdr, ['armazon']); if(cArmazon<0) cArmazon = findColIndex(hdr, ['armazon','modelo']); if(cArmazon<0) cArmazon=5;
+      let cTrat = findColByParts(hdr, ['tratamiento']); if(cTrat<0) cTrat = findColIndex(hdr, ['tratamiento']); if(cTrat<0) cTrat=6;
+      // OD / OI por partes (funciona con OD_Esfera y Esfera OD)
+      let cEsfOD = findColByParts(hdr, ['od','esfera']); if(cEsfOD<0) cEsfOD = findColIndex(hdr, ['esferaod']);
+      let cCilOD = findColByParts(hdr, ['od','cilindro']); if(cCilOD<0) cCilOD = findColIndex(hdr, ['cilindrood']);
+      let cEjeOD = findColByParts(hdr, ['od','eje']); if(cEjeOD<0) cEjeOD = findColIndex(hdr, ['ejeod']);
+      let cAddOD = findColByParts(hdr, ['od','add']); if(cAddOD<0) cAddOD = findColIndex(hdr, ['addod']);
+      let cAltOD = findColByParts(hdr, ['od','alt']); if(cAltOD<0) cAltOD=-1;
+      let cEsfOI = findColByParts(hdr, ['oi','esfera']); if(cEsfOI<0) cEsfOI = findColIndex(hdr, ['esferaoi']);
+      let cCilOI = findColByParts(hdr, ['oi','cilindro']); if(cCilOI<0) cCilOI = findColIndex(hdr, ['cilindrooi']);
+      let cEjeOI = findColByParts(hdr, ['oi','eje']); if(cEjeOI<0) cEjeOI = findColIndex(hdr, ['ejeoi']);
+      let cAddOI = findColByParts(hdr, ['oi','add']); if(cAddOI<0) cAddOI = findColIndex(hdr, ['addoi']);
+      let cAltOI = findColByParts(hdr, ['oi','alt']); if(cAltOI<0) cAltOI=-1;
+      let cGradOD = findColIndex(hdr, ['graduacionod','gradod']);
+      let cGradOI = findColIndex(hdr, ['graduacionoi','gradoi']);
+      let cTotal = findColByParts(hdr, ['total']); if(cTotal<0) cTotal = findColIndex(hdr, ['total','totalventa']); if(cTotal<0) cTotal=11;
+      let cAnt = findColByParts(hdr, ['anticipo']); if(cAnt<0) cAnt = findColIndex(hdr, ['anticipo']); if(cAnt<0) cAnt=12;
+      let cResta = findColByParts(hdr, ['resta','saldo']); if(cResta<0) cResta=-1;
+      let cEstado = findColByParts(hdr, ['estado']); if(cEstado<0) cEstado = findColIndex(hdr, ['estado']); if(cEstado<0) cEstado=-1;
+      let cObs = findColByParts(hdr, ['observaciones']); if(cObs<0) cObs = findColIndex(hdr, ['observaciones','obs']); if(cObs<0) cObs=15;
       for(let i=1;i<rows.length;i++){
         let cols = rows[i];
         if(!cols || cols.length < 10) continue;
-        if(String(cols[0]||'').toUpperCase().includes('TOTAL')) continue;
-        if(!cols[0] || String(cols[0]).length < 3) continue;
-        let od = parseGradStr(String(cols[7]||''));
-        od.add = String(cols[8]||'0').replace('+','').trim();
-        let oi = parseGradStr(String(cols[9]||''));
-        oi.add = String(cols[10]||'0').replace('+','').trim();
-        let fecha = String(cols[3]||'').trim();
-        let fm = fecha.match(/(\d{2})\/(\d{2})\/(\d{4})/);
-        if(fm) fecha = fm[3]+'-'+fm[2]+'-'+fm[1];
-        let entrega = String(cols[4]||'').trim();
-        let em = entrega.match(/(\d{2})\/(\d{2})\/(\d{4})/);
-        if(em) entrega = em[3]+'-'+em[2]+'-'+em[1];
-        // Si fecha viene como numero de Excel (ej 46000), convertir
-        if(!isNaN(fecha) && fecha !== '' && Number(fecha) > 30000){ let d = new Date((Number(fecha)-25569)*86400000); fecha = d.toISOString().slice(0,10); }
-        if(!isNaN(entrega) && entrega !== '' && Number(entrega) > 30000){ let d = new Date((Number(entrega)-25569)*86400000); entrega = d.toISOString().slice(0,10); }
-        arr.push({folio:String(cols[0]).trim(), nombre:String(cols[1]||'').trim(), telefono:String(cols[2]||'').trim(), fecha:fecha, fechaEntrega:entrega, armazon:{modelo:String(cols[5]||'').trim()}, tratamiento:String(cols[6]||'').trim(), od:od, oi:oi, total:String(cols[11]||'0').replace(/[^0-9.]/g,'')||'0', anticipo:String(cols[12]||'0').replace(/[^0-9.]/g,'')||'0', estado:String(cols[14]||'pendiente').trim().toLowerCase()||'pendiente', observaciones:String(cols[15]||'').trim()});
+        if(String(cols[cFolio]||'').toUpperCase().includes('TOTAL')) continue;
+        if(!cleanCell(cols[cFolio]) || cleanCell(cols[cFolio]).length < 3) continue;
+        let od, oi;
+        if(cEsfOD>=0){
+          let cleanNum = (v)=>{ let s = cleanCell(v); if(s===''||s==='-') return '0.00'; let n = parseFloat(s); return isNaN(n) ? '0.00' : n.toFixed(2); };
+          let cleanEje = (v)=>{ let s = cleanCell(v); if(s===''||s==='-') return '0'; let n = parseFloat(s); return isNaN(n) ? '0' : String(Math.round(n)); };
+          let cleanAdd = (v)=>{ let s = cleanCell(v); if(s===''||s==='-') return '0'; let n = parseFloat(s); return isNaN(n) ? '0' : String(n); };
+          od = {esfera: cleanNum(cols[cEsfOD]), cilindro: cleanNum(cCilOD>=0?cols[cCilOD]:''), eje: cleanEje(cEjeOD>=0?cols[cEjeOD]:''), add: cleanAdd(cAddOD>=0?cols[cAddOD]:''), alt: cleanNum(cAltOD>=0?cols[cAltOD]:'')};
+          oi = {esfera: cleanNum(cols[cEsfOI]), cilindro: cleanNum(cCilOI>=0?cols[cCilOI]:''), eje: cleanEje(cEjeOI>=0?cols[cEjeOI]:''), add: cleanAdd(cAddOI>=0?cols[cAddOI]:''), alt: cleanNum(cAltOI>=0?cols[cAltOI]:'')};
+        } else {
+          od = parseGradStr(cleanCell(cols[cGradOD>=0?cGradOD:7]||''));
+          od.add = cleanCell(cols[cAddOD>=0?cAddOD:8]||'0').replace('+','').trim();
+          oi = parseGradStr(cleanCell(cols[cGradOI>=0?cGradOI:9]||''));
+          oi.add = cleanCell(cols[cAddOI>=0?cAddOI:10]||'0').replace('+','').trim();
+        }
+        let fecha = excelDateToISO(cols[cFecha]);
+        if(!fecha) fecha = today();
+        let entrega = cEntrega>=0 ? excelDateToISO(cols[cEntrega]) : '';
+        if(!entrega) entrega = addDays(fecha, 15);
+        let _total = parseMoneyCell(cleanCell(cols[cTotal])); let _ant = parseMoneyCell(cleanCell(cols[cAnt]));
+        let _estado = cEstado>=0 ? cleanCell(cols[cEstado]).toLowerCase() : '';
+        if(!_estado) _estado = 'pendiente';
+        arr.push({folio:cleanCell(cols[cFolio]), nombre:cleanCell(cols[cNombre]), telefono:cleanCell(cols[cTel]), whatsapp: cWhats>=0 ? cleanCell(cols[cWhats]) : '', fecha:fecha, fechaEntrega:entrega, armazon:{modelo:cleanCell(cols[cArmazon])}, tratamiento:cleanCell(cols[cTrat]), od:od, oi:oi, total:_total, anticipo:_ant, estado:_estado, observaciones:cleanCell(cols[cObs])});
       }
       if(!arr.length){ alert('No encontre pacientes en ese .xlsx. Revisa que la primera hoja tenga el encabezado y los datos. Prueba guardarlo como .csv y importar ese .csv.'); if(e) e.target.value=''; return; }
       let folios = new Set(patients.map(p=>p.folio));
