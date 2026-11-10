@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f2b46">
-<title>Centro Óptico Rosales v56 FIX CLOUD_URL</title>
+<title>v57 - Centro Óptico Rosales v57 FIX FIREBASE_URL</title>
 <style>
 :root{--navy:#0f2b46;--navy2:#173a5e;--gold:#c9a86a;--bg:#f4f5f7;--card:#fff;--border:#e5e7eb;--muted:#6b7b8d;--faint:#9aa8b8;--danger:#c03a2b}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--navy);font-family:Inter,system-ui,sans-serif;height:100%}
@@ -78,7 +78,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 <!-- FORM -->
 <div style="overflow:auto;background:var(--bg)" class="no-print smooth">
 <header style="height:56px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:10">
-<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales</div><div style="display:none">v23 leyenda oculta</div></div>
+<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales <span style='font-size:10px;background:#22c55e;color:#fff;padding:2px 6px;border-radius:999px;vertical-align:middle'>v57</span></div><div style="display:none">v23 leyenda oculta</div></div>
 <div style="display:flex;gap:6px"><button class="btn btn-gold" onclick="newClient()">Nuevo</button><span id="cloudStatus" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;font-size:11px"><span id="cloudDot" class="cloud-dot local"></span><span id="cloudText">Modo Local</span></span><button id="btnNube" class="btn btn-white" style="font-size:11px;padding:8px 10px" onclick="openCloudSetup()">☁️ Nube</button><button class="btn btn-white" onclick="document.getElementById('importFile').click()" style="font-size:11px;padding:8px 10px">📂 Importar</button><input type="file" id="importFile" accept=".json,.csv,.xls,.xlsx,.html" style="display:none" onchange="importOldFile(event)"><button class="btn btn-white" onclick="exportProfesional()">Exportar a Excel</button></div>
 </header>
 
@@ -495,7 +495,9 @@ function setCloudUI(state, text){
 function openCloudSetup(){ try{
   var m=document.getElementById('cloudModal'); if(!m){ alert('No se encontro el modal de nube'); return; }
   m.style.display='flex';
-  var inp=document.getElementById('cloudUrlInput'); if(inp && !inp.value) inp.value = FIREBASE_URL;
+  var fb = 'https://centro-optico-rosales-4b197-default-rtdb.firebaseio.com';
+  try{ if(typeof FIREBASE_URL !== 'undefined' && FIREBASE_URL) fb = FIREBASE_URL; }catch(e){}
+  var inp=document.getElementById('cloudUrlInput'); if(inp && !inp.value) inp.value = fb;
   var msg=document.getElementById('cloudMsg'); if(msg) msg.textContent='Listo para conectar a Firebase.';
 } catch(e){ alert('Error al abrir nube: '+e.message); } }
 function closeCloudSetup(){ var m=document.getElementById('cloudModal'); if(m) m.style.display='none'; }
@@ -790,7 +792,9 @@ load(); fecha.value=today(); renderList(); onFormChange();
 try{ localStorage.setItem('rosales_firebase_url', FIREBASE_URL); }catch(e){}
 async function cloudPull2(){
   let inp = document.getElementById('cloudUrlInput');
-  let fb = inp ? inp.value.trim() : FIREBASE_URL;
+  let _fbDefault = 'https://centro-optico-rosales-4b197-default-rtdb.firebaseio.com';
+  let _fbCur = _fbDefault; try{ if(typeof FIREBASE_URL !== 'undefined' && FIREBASE_URL) _fbCur = FIREBASE_URL; }catch(e){}
+  let fb = inp ? inp.value.trim() : _fbCur;
   if(fb){ FIREBASE_URL = fb; CLOUD_URL = fb; try{ localStorage.setItem('rosales_firebase_url', fb); }catch(e){} }
   if(!FIREBASE_URL){ setCloudUI('local','Modo Local'); return; }
   setCloudUI('sync','Conectando Firebase...');
