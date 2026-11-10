@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f2b46">
-<title>Centro Óptico Rosales v52 NUBE FIREBASE FIX BOTON</title>
+<title>Centro Óptico Rosales v53 IMPORTA XLSX</title>
 <style>
 :root{--navy:#0f2b46;--navy2:#173a5e;--gold:#c9a86a;--bg:#f4f5f7;--card:#fff;--border:#e5e7eb;--muted:#6b7b8d;--faint:#9aa8b8;--danger:#c03a2b}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--navy);font-family:Inter,system-ui,sans-serif;height:100%}
@@ -56,6 +56,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 .cloud-dot.sync{background:#3b82f6;animation:pulse 1s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 </style>
+<script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
 <div class="app">
@@ -78,7 +79,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 <div style="overflow:auto;background:var(--bg)" class="no-print smooth">
 <header style="height:56px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:10">
 <div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales</div><div style="display:none">v23 leyenda oculta</div></div>
-<div style="display:flex;gap:6px"><button class="btn btn-gold" onclick="newClient()">Nuevo</button><span id="cloudStatus" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;font-size:11px"><span id="cloudDot" class="cloud-dot local"></span><span id="cloudText">Modo Local</span></span><button id="btnNube" class="btn btn-white" style="font-size:11px;padding:8px 10px" onclick="openCloudSetup()">☁️ Nube</button><button class="btn btn-white" onclick="document.getElementById('importFile').click()" style="font-size:11px;padding:8px 10px">📂 Importar</button><input type="file" id="importFile" accept=".json,.csv,.xls,.html" style="display:none" onchange="importOldFile(event)"><button class="btn btn-white" onclick="exportProfesional()">Exportar a Excel</button></div>
+<div style="display:flex;gap:6px"><button class="btn btn-gold" onclick="newClient()">Nuevo</button><span id="cloudStatus" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;font-size:11px"><span id="cloudDot" class="cloud-dot local"></span><span id="cloudText">Modo Local</span></span><button id="btnNube" class="btn btn-white" style="font-size:11px;padding:8px 10px" onclick="openCloudSetup()">☁️ Nube</button><button class="btn btn-white" onclick="document.getElementById('importFile').click()" style="font-size:11px;padding:8px 10px">📂 Importar</button><input type="file" id="importFile" accept=".json,.csv,.xls,.xlsx,.html" style="display:none" onchange="importOldFile(event)"><button class="btn btn-white" onclick="exportProfesional()">Exportar a Excel</button></div>
 </header>
 
 <div style="padding:16px;max-width:800px;margin:0 auto">
@@ -521,9 +522,62 @@ function parseCSVLine(line){
   for(let i=0;i<line.length;i++){ let c=line[i]; if(c=='"'){ if(inQ && line[i+1]=='"'){ cur+='"'; i++; } else inQ=!inQ; } else if(c==',' && !inQ){ out.push(cur); cur=''; } else cur+=c; }
   out.push(cur); return out;
 }
+
+function importXLSXFile(f, e){
+  if(typeof XLSX === 'undefined'){ alert('No se pudo cargar la libreria para leer .xlsx. Guarda tu archivo como .csv (Archivo > Descargar > CSV) y vuelve a intentar con ese .csv.'); if(e) e.target.value=''; return; }
+  let r = new FileReader();
+  r.onload = ()=>{
+    try{
+      let data = new Uint8Array(r.result);
+      let wb = XLSX.read(data, {type:'array'});
+      let ws = wb.Sheets[wb.SheetNames[0]];
+      let rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:''});
+      // rows[0] es encabezado, resto son pacientes
+      let arr = [];
+      for(let i=1;i<rows.length;i++){
+        let cols = rows[i];
+        if(!cols || cols.length < 10) continue;
+        if(String(cols[0]||'').toUpperCase().includes('TOTAL')) continue;
+        if(!cols[0] || String(cols[0]).length < 3) continue;
+        let od = parseGradStr(String(cols[7]||''));
+        od.add = String(cols[8]||'0').replace('+','').trim();
+        let oi = parseGradStr(String(cols[9]||''));
+        oi.add = String(cols[10]||'0').replace('+','').trim();
+        let fecha = String(cols[3]||'').trim();
+        let fm = fecha.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+        if(fm) fecha = fm[3]+'-'+fm[2]+'-'+fm[1];
+        let entrega = String(cols[4]||'').trim();
+        let em = entrega.match(/(\d{2})\/(\d{2})\/(\d{4})/);
+        if(em) entrega = em[3]+'-'+em[2]+'-'+em[1];
+        // Si fecha viene como numero de Excel (ej 46000), convertir
+        if(!isNaN(fecha) && fecha !== '' && Number(fecha) > 30000){ let d = new Date((Number(fecha)-25569)*86400000); fecha = d.toISOString().slice(0,10); }
+        if(!isNaN(entrega) && entrega !== '' && Number(entrega) > 30000){ let d = new Date((Number(entrega)-25569)*86400000); entrega = d.toISOString().slice(0,10); }
+        arr.push({folio:String(cols[0]).trim(), nombre:String(cols[1]||'').trim(), telefono:String(cols[2]||'').trim(), fecha:fecha, fechaEntrega:entrega, armazon:{modelo:String(cols[5]||'').trim()}, tratamiento:String(cols[6]||'').trim(), od:od, oi:oi, total:String(cols[11]||'0').replace(/[^0-9.]/g,'')||'0', anticipo:String(cols[12]||'0').replace(/[^0-9.]/g,'')||'0', estado:String(cols[14]||'pendiente').trim().toLowerCase()||'pendiente', observaciones:String(cols[15]||'').trim()});
+      }
+      if(!arr.length){ alert('No encontre pacientes en ese .xlsx. Revisa que la primera hoja tenga el encabezado y los datos. Prueba guardarlo como .csv y importar ese .csv.'); if(e) e.target.value=''; return; }
+      let folios = new Set(patients.map(p=>p.folio));
+      let nuevos = arr.filter(p=>!folios.has(p.folio));
+      let actualizados = arr.filter(p=>folios.has(p.folio));
+      if(actualizados.length){ actualizados.forEach(p=>{ let idx = patients.findIndex(x=>x.folio===p.folio); if(idx>=0) patients[idx]=p; }); }
+      patients = [...patients, ...nuevos];
+      if(arr.length){ let nums = arr.map(p=>parseInt(String(p.folio||'').replace(/[^0-9]/g,''))||0); counter = Math.max(counter, ...nums, 1)+1; }
+      persist(); renderList(); renderTickets();
+      alert('Listo. Importados '+nuevos.length+' nuevos + '+actualizados.length+' actualizados desde .xlsx. Total ahora: '+patients.length+'. Ahora dale Guardar para subir a la nube.');
+      try{ cloudPush(); }catch(err){}
+      if(e) e.target.value='';
+    }catch(err){ alert('Error al importar .xlsx: '+err.message); console.error(err); if(e) e.target.value=''; }
+  };
+  r.readAsArrayBuffer(f);
+}
+
 function importOldFile(e){
   let f = e.target.files[0]; if(!f){ alert('No elegiste archivo'); return; }
   alert('Leyendo '+f.name+'...');
+  if(f.name.toLowerCase().endsWith('.xlsx')){
+    importXLSXFile(f, e);
+    return;
+  }
+
   let r = new FileReader();
   r.onload = ()=>{
     try{
