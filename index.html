@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f2b46">
-<title>Centro Óptico Rosales v47 NUBE FIREBASE 100%</title>
+<title>Centro Óptico Rosales v48 NUBE FIREBASE LIMPIA</title>
 <style>
 :root{--navy:#0f2b46;--navy2:#173a5e;--gold:#c9a86a;--bg:#f4f5f7;--card:#fff;--border:#e5e7eb;--muted:#6b7b8d;--faint:#9aa8b8;--danger:#c03a2b}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--navy);font-family:Inter,system-ui,sans-serif;height:100%}
@@ -69,143 +69,11 @@ Google bloquea el fetch desde file:// aunque la URL sí sirva. No es tu URL, es 
 </div>
 <script>
 try{ if(location.protocol==='file:'){ let b=document.getElementById('fileWarn'); if(b) b.style.display='block'; } }catch(e){}
-</script>
+</script><script>
+let FIREBASE_URL = 'https://centro-optico-rosales-4b197-default-rtdb.firebaseio.com';
+let CLOUD_URL = FIREBASE_URL;
+try{ localStorage.setItem('rosales_firebase_url', FIREBASE_URL); }catch(e){}
 
-<div class="app">
-<!-- LISTA -->
-<div class="panel no-print">
-<div class="head"><span>CLIENTES • <span id="count">0</span></span><span id="counterView" class="mono" style="color:var(--muted);font-weight:400"></span></div>
-<div style="padding:12px">
-<input id="q" placeholder="Buscar nombre, folio, armazón..." oninput="renderList()" style="padding:10px 12px">
-<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
-<button style="display:none" style="display:none" onclick="setFilter('todos')" class="btn btn-white" style="font-size:10px;padding:4px 8px">TODOS</button>
-<button style="display:none" onclick="setFilter(\'pendiente\')"PEND</button>
-<button style="display:none" onclick="setFilter(\'en laboratorio\')"LAB</button>
-<button style="display:none" onclick="setFilter(\'listo\')"LISTO</button>
-</div>
-</div>
-<div id="list" class="scroll" style="display:flex;flex-direction:column;gap:8px"></div>
-</div>
-
-<!-- FORM -->
-<div style="overflow:auto;background:var(--bg)" class="no-print smooth">
-<header style="height:56px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:10">
-<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales</div><div style="display:none">v23 leyenda oculta</div></div>
-<div style="display:flex;gap:6px"><button class="btn btn-gold" onclick="newClient()">Nuevo</button><span id="cloudStatus" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;font-size:11px"><span id="cloudDot" class="cloud-dot local"></span><span id="cloudText">Modo Local</span></span><button id="btnNube" class="btn btn-white" style="font-size:11px;padding:8px 10px" onclick="try{document.getElementById('cloudModal').style.display='flex';var i=document.getElementById('cloudUrlInput');if(i){i.value=localStorage.getItem('rosales_cloud_url')||'';i.removeAttribute('readonly');i.removeAttribute('disabled');}}catch(e){alert('Error al abrir nube: '+e.message)}">☁️ Nube (opcional)</button><button class="btn btn-white" onclick="document.getElementById('importFile').click()" style="font-size:11px;padding:8px 10px">📂 Importar</button><input type="file" id="importFile" accept=".json,.csv,.xls,.html" style="display:none" onchange="importOldFile(event)"><button class="btn btn-white" onclick="exportProfesional()">Exportar a Excel</button></div>
-</header>
-
-<div style="padding:16px;max-width:800px;margin:0 auto">
-<div style="background:#fff;border:1px solid var(--border);border-radius:16px;padding:16px;box-shadow:0 1px 2px rgba(0,0,0,.05)">
-
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-<h3 id="formTitle" style="margin:0">Nuevo Paciente</h3><span id="folioView" class="mono" style="font-size:12px;color:var(--muted)"></span>
-</div>
-
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-<div><label>Nombre del paciente *</label><input id="nombre" placeholder="Nombre completo" oninput="onFormChange()"></div>
-<div><label>Fecha de venta</label><input id="fecha" type="date" oninput="onFormChange()"></div>
-<div><label>Teléfono</label><input id="telefono" placeholder="10 dígitos" oninput="onFormChange()"></div>
-<div><label>WhatsApp</label><input id="whatsapp" oninput="onFormChange()"></div>
-</div>
-
-<div style="margin-top:14px"><div style="font-size:10px;font-weight:800;letter-spacing:.08em;margin-bottom:8px">GRADUACIÓN</div>
-<div style="background:#f9fafb;padding:10px;border-radius:12px;margin-bottom:8px">
-<div style="font-weight:800;font-size:11px;margin-bottom:6px">OD</div>
-<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px">
-<div><label>Esfera</label><input id="od_esfera" oninput="onFormChange()"></div>
-<div><label>Cil</label><input id="od_cilindro" oninput="onFormChange()"></div>
-<div><label>Eje</label><input id="od_eje" oninput="onFormChange()"></div>
-<div><label>ADD</label><input id="od_add" oninput="onFormChange()"></div>
-<div><label>ALT</label><input id="od_alt" oninput="onFormChange()"></div>
-</div>
-</div>
-<div style="background:#f9fafb;padding:10px;border-radius:12px">
-<div style="font-weight:800;font-size:11px;margin-bottom:6px">OI</div>
-<div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px">
-<div><label>Esfera</label><input id="oi_esfera" oninput="onFormChange()"></div>
-<div><label>Cil</label><input id="oi_cilindro" oninput="onFormChange()"></div>
-<div><label>Eje</label><input id="oi_eje" oninput="onFormChange()"></div>
-<div><label>ADD</label><input id="oi_add" oninput="onFormChange()"></div>
-<div><label>ALT</label><input id="oi_alt" oninput="onFormChange()"></div>
-</div>
-</div>
-</div>
-
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
-<div><label>Armazón (modelo)</label><input id="armazon" placeholder="Ej. Ray-Ban 5228" oninput="onFormChange()"></div>
-<div><label>Tratamiento</label><input id="tratamiento" placeholder="Antirreflejante, Blue, etc." oninput="onFormChange()"></div>
-</div>
-
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-top:12px">
-<div><label>Total venta</label><input id="total" type="number" placeholder="0" oninput="onFormChange()"></div>
-<div><label>Anticipo</label><input id="anticipo" type="number" placeholder="0" oninput="onFormChange()"></div>
-<div><label>Saldo</label><div id="saldo" style="padding:9px 11px;background:#f4f5f7;border-radius:10px;font-weight:800">$0 MXN</div></div>
-<div style="display:none"><label>Estado</label><select id="estado" onchange="onFormChange()"><option value="pendiente">Pendiente</option><option value="en laboratorio">En laboratorio</option><option value="listo">Listo</option><option value="entregado">Entregado</option></select></div>
-</div>
-
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
-<div><label>Fecha entrega (fija +15 días)</label><input id="fechaEntrega" type="date" readonly style="background:#fffbeb;border-color:#fde68a;font-weight:700"></div>
-<div style="display:none"><label>Lugar de jornada</label><input id="jornada" placeholder="Ej. T-III Centro, Deportivo..." oninput="onFormChange()"></div>
-</div>
-
-<div style="margin-top:12px"><label>Observaciones anotadas (aparece en ambos tickets)</label><textarea id="observaciones" rows="3" placeholder="Anota observaciones del paciente, lugar de jornada, forma de pago, etc." oninput="onFormChange()"></textarea></div>
-
-<div style="display:flex;gap:8px;margin-top:14px;position:sticky;bottom:0;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);padding:10px 0">
-<button class="btn btn-navy" style="flex:1;padding:12px" onclick="save()">Guardar</button><button class="btn btn-white" style="padding:12px" onclick="try{document.getElementById('cloudModal').style.display='flex';}catch(e){alert(e.message)}">☁️ Nube (opcional)</button>
-<button class="btn btn-white" style="display:none" onclick="newClient()">Cancelar</button>
-</div>
-
-</div>
-</div>
-</div>
-
-<!-- TICKETS -->
-<div class="panel panel-right no-print">
-<div class="head"><span>TICKETS LIGADOS</span><span class="mono" style="font-size:9px;color:var(--faint)">58mm</span></div>
-<div class="scroll" style="display:flex;flex-direction:column;gap:12px">
-
-<div class="tab"><button id="btn-venta" class="active" onclick="showTicket('venta')">TICKET VENTA</button><button id="btn-lab" onclick="showTicket('lab')">LABORATORIO</button></div>
-
-<div id="preview-venta" class="ticket-print-area" style="margin:0 auto;width:240px;background:#fff;border-radius:12px;padding:12px;box-shadow:0 8px 24px rgba(0,0,0,.12)"><div class="ticket-mono ticket-58mm" id="t-venta" style="width:216px"></div></div>
-<div id="preview-lab" class="ticket-print-area" style="display:none;margin:0 auto;width:240px;background:#fff;border-radius:12px;padding:12px;box-shadow:0 8px 24px rgba(0,0,0,.12)"><div class="ticket-mono ticket-58mm" id="t-lab" style="width:216px"></div></div>
-
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-<button class="btn btn-navy" style="display:none !important" onclick="printTicket('venta')">🖨️ Imprimir Venta</button>
-<button class="btn" style="display:none !important;background:#111;color:#fff" onclick="printTicket('lab')">🖨️ Imprimir Lab</button>
-</div>
-<div style="display:none !important;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
-<button class="btn btn-white" style="display:none !important" onclick="downloadTicket('venta')">⬇️ Descargar Venta HTML</button>
-<button class="btn btn-white" style="display:none !important" onclick="downloadTicket('lab')">⬇️ Descargar Lab HTML</button>
-</div>
-<a id="wa" style="display:none" target="_blank" style="display:none;background:#25D366;color:#fff;text-align:center;padding:10px;border-radius:10px;text-decoration:none;font-size:12px;font-weight:700">📱 WhatsApp Cliente</a>
-
-<div style="display:none;background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:8px;font-size:10px;color:#92400e">⚠️ <b>IMPORTANTE IMPRESIÓN:</b> En esta vista previa el navegador BLOQUEA el print. Por eso al dar Imprimir se abre el ticket SOLO en pestaña nueva, ahí sí imprime. <br>💡 <b>Autoguardado:</b> Al dar Imprimir o Ctrl+P se guarda solo. <b>Edición:</b> En Lab puedes editar todo directo en el ticket. En Venta solo observaciones. <b>Impresión por iframe:</b> Al dar Imprimir o Ctrl+P se abre solo el ticket en una ventana para imprimir. Si tu navegador bloquea ventanas, permite pop-ups para este sitio. <b>Ctrl+P = imprime solo el ticket seleccionado.</b> Elige VENTA o LAB arriba y presiona Ctrl+P. Folio venta = folio lab. Entrega = venta +15 días.</div>
-
-<div><label style="font-size:9px">Texto libre extra (ambos tickets)</label><input id="customText" placeholder="Ej. Promoción, garantía..." oninput="onFormChange()"></div>
-
-</div>
-</div>
-</div>
-
-
-<div id="cloudModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center;padding:16px">
-  <div style="background:#fff;max-width:640px;width:100%;border-radius:16px;padding:20px;max-height:90vh;overflow:auto">
-    <div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">☁️ Conectar Nube - Tiempo Real</h3><button onclick="closeCloudSetup()" style="border:0;background:#f3f4f6;border-radius:999px;width:32px;height:32px;cursor:pointer">✕</button></div>
-    <p style="font-size:12px;color:#666;line-height:1.5">Con esto todos los dispositivos ven la misma lista al instante. Es gratis con Google Sheets.<br><b>Paso 1:</b> Crea una Hoja nueva en Google Sheets.<br><b>Paso 2:</b> En esa hoja ve a Extensiones > Apps Script, pega el código de abajo, dale Implementar > Nueva implementación > Aplicación web > Quien tiene acceso: Cualquiera > Implementar.<br><b>Paso 3:</b> Copia la URL que te da Google y pégala abajo.</p>
-    <label style="font-size:11px;font-weight:700">URL DE TU FIREBASE (termina en firebaseio.com)</label>
-    <input id="cloudUrlInput" placeholder="https://script.google.com/macros/s/...firebaseio.com" style="margin-top:6px">
-    <div style="display:flex;gap:8px;margin-top:10px"><button class="btn btn-navy" style="flex:1" onclick="alert('Guardando URL...'); saveCloudUrl()">💾 Guardar y Conectar</button><button class="btn btn-white" onclick="alert('Probando conexion...'); testCloudFromInput()">🔄 Probar esta URL</button><button class="btn btn-white" onclick="disconnectCloud()">Desconectar</button></div>
-    <div style="background:#dbeafe;padding:10px;border-radius:8px;font-size:11px;margin:8px 0">Si dice NO CONECTA y al abrir la URL en otra pestaña SÍ sale {"patients":[]}, es porque lo abres como file://. Súbelo a <b>app.netlify.com/drop</b> y abre el link https que te dé. Ahí sí conecta.</div><div id="cloudMsg" style="white-space:pre-wrap;background:#fef3c7;padding:10px;border-radius:8px;font-size:11px;min-height:60px" style="font-size:12px;margin-top:8px;color:#0f2b46"></div>
-    <label style="font-size:11px;font-weight:700;margin-top:14px;display:block">PASOS FIREBASE (copia todo y pégalo en Apps Script)</label>
-    <div style="background:#f0fdf4;padding:12px;border-radius:8px;font-size:12px;line-height:1.6"><b>Tu Firebase ya está puesta:</b><br><code>https://centro-optico-rosales-4b197-default-rtdb.firebaseio.com</code><br><br>En Firebase > Reglas debe estar:<br><code>{ ".read": true, ".write": true }</code> y darle Publicar.</div>
-    <button class="btn btn-white" style="margin-top:8px;width:100%" onclick="copyAppsScript()">📋 Copiar pasos</button>
-    <p style="font-size:11px;color:#888">Sin URL, la app sigue funcionando en Modo Local y guarda en este dispositivo. Con URL, sincroniza cada 10 segundos entre todos los dispositivos.</p>
-  </div>
-</div>
-
-<div id="print-area" style="display:none"><div class="ticket-mono ticket-58mm" id="print-content" style="width:58mm"></div></div>
-
-<script>
 const LS_KEY="centro_optico_rosales_v3", LS_OLD="centro_optico_rosales_v2";
 let patients=[], counter=1, filter="todos", editing=null, active="venta";
 
@@ -487,8 +355,8 @@ function exportJSON(){
 }
 
 // ===== NUBE - TIEMPO REAL (igual UI, solo agrega sincronización) =====
-let FIREBASE_URL = 'https://centro-optico-rosales-4b197-default-rtdb.firebaseio.com';
-let CLOUD_URL = FIREBASE_URL;
+
+
 try{ localStorage.setItem('rosales_firebase_url', FIREBASE_URL); }catch(e){}
 // Si había una URL vieja guardada, reemplazarla por la nueva que pasó el usuario
 try{ if(localStorage.getItem('rosales_cloud_url') && localStorage.getItem('rosales_cloud_url') !== CLOUD_URL){ localStorage.setItem('rosales_cloud_url', CLOUD_URL); } else if(!localStorage.getItem('rosales_cloud_url')){ localStorage.setItem('rosales_cloud_url', CLOUD_URL); } }catch(e){}
@@ -506,157 +374,33 @@ function openCloudSetup(){ try{ var m=document.getElementById('cloudModal'); if(
 function closeCloudSetup(){ document.getElementById('cloudModal').style.display='none'; }
 function copyAppsScript(){ let t=document.getElementById('appsScriptCode'); t.select(); document.execCommand('copy'); document.getElementById('cloudMsg').textContent='Código copiado. Pégalo en Apps Script.'; }
 
-function saveCloudUrl(){ cloudPull2(); }
-function testCloud(){ cloudPull2(); }
-function testCloudFromInput(){ cloudPull2(); }
 
-function disconnectCloud(){ CLOUD_URL=''; localStorage.removeItem('rosales_cloud_url'); cloudOnline=false; setCloudUI('local','Modo Local'); document.getElementById('cloudMsg').textContent='Desconectado. Ahora solo guarda en este dispositivo.'; }
-async function testCloudFromInput(){
-  let v = document.getElementById('cloudUrlInput').value.trim();
-  if(!v){ alert('Pega tu URL primero'); return; }
-  CLOUD_URL = v; localStorage.setItem('rosales_cloud_url', v);
-  testCloud();
-}
-async function testCloud(){
-  if(!CLOUD_URL){ document.getElementById('cloudMsg').textContent='Primero pega tu URL.'; return; }
-  setCloudUI('sync','Conectando...');
-  try{
-    let r = await fetch(CLOUD_URL);
-    let d = await r.json();
-    cloudOnline = true;
-    setCloudUI('online','Nube Conectada • ' + (d.patients||[]).length + ' pacientes');
-    document.getElementById('cloudMsg').textContent='Conectado. Hay '+(d.patients||[]).length+' pacientes en la nube. Se sincronizará cada 10s.';
-    await cloudPull2();
-  }catch(e){ cloudOnline=false; setCloudUI('local','Error de nube - Modo Local'); document.getElementById('cloudMsg').textContent='No se pudo conectar: '+e.message+' Revisa que la implementación sea Cualquiera y la URL termine en firebaseio.com'; }
-}
+
+
+
+
+
+
 
 // ===== NUBE v38: PUENTE para file:// (AllOrigins) =====
-function proxyUrl(u){ return 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u); }
-
-
-async function cloudPull2(){
-  let inp = document.getElementById('cloudUrlInput');
-  let fb = inp ? inp.value.trim() : FIREBASE_URL;
-  if(fb){ FIREBASE_URL = fb; CLOUD_URL = fb; try{ localStorage.setItem('rosales_firebase_url', fb); }catch(e){} }
-  if(!FIREBASE_URL){ setCloudUI('local','Modo Local'); return; }
-  setCloudUI('sync','Conectando Firebase...');
-  let msg = document.getElementById('cloudMsg');
-  try{
-    let url = FIREBASE_URL.replace(/\/$/,'') + '/centro_optico.json?t=' + Date.now();
-    if(msg) msg.textContent = 'Probando Firebase...\n' + url;
-    let r = await fetch(url);
-    if(!r.ok) throw new Error('Firebase respondió ' + r.status + '. Revisa Reglas: { ".read": true, ".write": true } y que la base esté creada.');
-    let d = await r.json();
-    if(d && Array.isArray(d.patients)){
-      patients = d.patients.map(x=>({...x, armazon: typeof x.armazon==='string'?{modelo:x.armazon}:x.armazon||{modelo:''}, estado: (x.estado && x.estado!=='undefined' ? x.estado : 'pendiente')}));
-      if(d.counter) counter = d.counter;
-      persist(); renderList(); renderTickets();
-      cloudOnline=true; setCloudUI('online','Nube Conectada • '+patients.length+' pacientes');
-      if(msg) msg.textContent = '✅ CONECTADO a Firebase.\nPacientes en nube: ' + patients.length;
-      return d;
-    } else if(d === null){
-      if(msg) msg.textContent = 'Firebase vacío, subiendo tus ' + patients.length + ' pacientes...';
-      await cloudPush();
-      cloudOnline=true; setCloudUI('online','Nube Conectada • '+patients.length+' pacientes');
-      if(msg) msg.textContent = '✅ CONECTADO. Subidos ' + patients.length + ' pacientes a Firebase.';
-      return {patients: patients};
-    } else {
-      throw new Error('Firebase devolvió algo raro: ' + JSON.stringify(d).slice(0,300));
-    }
-  }catch(e){
-    setCloudUI('local','Error Firebase');
-    if(msg) msg.textContent = '❌ Error Firebase: ' + e.message + '\nURL: ' + FIREBASE_URL + '\n\nRevisa en Firebase > Realtime Database > Reglas que tengas:\n{ ".read": true, ".write": true } y le hayas dado Publicar.';
-  }
-}
 
 
 
 
-async function cloudPush(){
-  if(!FIREBASE_URL) return;
-  if(Date.now()-lastPush < 2000) return;
-  lastPush = Date.now();
-  try{
-    let url = FIREBASE_URL.replace(/\/$/,'') + '/centro_optico.json';
-    await fetch(url, {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({patients: patients, counter: counter})});
-    cloudOnline=true; setCloudUI('online','Nube Conectada • '+patients.length+' pacientes');
-  }catch(e){ console.log('push error', e); }
-}
 
 
 
-async function cloudPull(showMsg){
-  if(!CLOUD_URL) return;
-  try{
-    let r = await fetch(CLOUD_URL + '?t=' + Date.now());
-    let d = await r.json();
-    if(d && Array.isArray(d.patients)){
-      // Si la nube tiene más datos o diferentes, fusionar: la nube manda
-      let localKey = JSON.stringify(patients.map(p=>p.folio+':'+p.nombre));
-      let cloudKey = JSON.stringify(d.patients.map(p=>p.folio+':'+p.nombre));
-      if(localKey !== cloudKey){
-        patients = d.patients.map(x=>({...x, armazon: typeof x.armazon==='string'?{modelo:x.armazon}:x.armazon||{modelo:''}}));
-        if(d.counter) counter = d.counter;
-        persist(); renderList(); renderTickets();
-        if(showMsg) document.getElementById('cloudMsg').textContent='Sincronizado desde nube: '+patients.length+' pacientes.';
-      }
-      cloudOnline=true; setCloudUI('online','Nube Conectada • '+patients.length+' pacientes');
-    }
-  }catch(e){ /* seguir en local */ }
-}
-// Auto-sync cada 10 segundos si hay nube
-setInterval(()=>{ if(CLOUD_URL) cloudPull(false); }, 10000);
-// Al guardar, también empujar a nube
+
+
+
+
+
+
 
 // ===== FIX NUBE: JSONP para Apps Script + Importar archivos viejos =====
-function cloudPullJSONP(){ return Promise.reject(new Error('Ya no se usa JSONP, ahora es Firebase')); }
 
-async function cloudPull2(){
-  if(!CLOUD_URL){ setCloudUI('local','Modo Local'); return; }
-  setCloudUI('sync','Conectando nube...');
-  let msg = document.getElementById('cloudMsg');
-  let lastErr = '';
-  // 1) JSONP
-  try{
-    let d = await cloudPullJSONP();
-    if(d && Array.isArray(d.patients)){
-      patients = d.patients.map(x=>({...x, armazon: typeof x.armazon==='string'?{modelo:x.armazon}:x.armazon||{modelo:''}, estado: (x.estado && x.estado!=='undefined' ? x.estado : 'pendiente')}));
-      if(d.counter) counter = d.counter;
-      persist(); renderList(); renderTickets();
-      cloudOnline=true; setCloudUI('online','Nube Conectada • '+patients.length+' pacientes');
-      if(msg) msg.textContent='CONECTADO. URL: '+CLOUD_URL+' | Pacientes en nube: '+patients.length;
-      return d;
-    } else {
-      lastErr = 'JSONP devolvió algo que no es lista: '+JSON.stringify(d).slice(0,300);
-    }
-  }catch(e){ lastErr = 'JSONP falló: '+e.message; }
-  // 2) fetch
-  try{
-    let r = await fetch(CLOUD_URL + '?t=' + Date.now());
-    let txt = await r.text();
-    if(txt.includes('<html') || txt.includes('accounts.google.com')){
-      lastErr += ' | fetch devolvió página de login de Google. Eso significa que en Implementar NO pusiste Cualquiera / Anyone. Tienes que volver a Implementar y poner Cualquiera.';
-      throw new Error('Login redirect');
-    }
-    let d = JSON.parse(txt);
-    if(d && Array.isArray(d.patients)){
-      patients = d.patients.map(x=>({...x, armazon: typeof x.armazon==='string'?{modelo:x.armazon}:x.armazon||{modelo:''}, estado: (x.estado && x.estado!=='undefined' ? x.estado : 'pendiente')}));
-      if(d.counter) counter = d.counter;
-      persist(); renderList(); renderTickets();
-      cloudOnline=true; setCloudUI('online','Nube Conectada • '+patients.length+' pacientes');
-      if(msg) msg.textContent='CONECTADO por fetch. '+patients.length+' pacientes.';
-      return d;
-    } else {
-      lastErr += ' | fetch devolvió: '+txt.slice(0,300);
-    }
-  }catch(e2){ lastErr += ' | fetch falló: '+e2.message; }
-  setCloudUI('local','Modo Local • Guardado aquí');
-  if(msg){
-    msg.style.whiteSpace='pre-wrap';
-    msg.textContent='NO CONECTA.\nURL que estoy probando:\n'+CLOUD_URL+'\n\nError:\n'+lastErr+'\n\nPrueba: Dale a Abrir URL en otra pestaña. Si te pide iniciar sesión, es el permiso Cualquiera. Si te sale {"patients":[]} entonces la URL sí sirve y el error es otro.';
-  }
-  console.error('Cloud error:', lastErr);
-}
+
+
 
 
 function parseGradStr(s){
@@ -762,6 +506,59 @@ persist = function(){ _origPersist(); if(CLOUD_URL && Date.now()-lastPush>2000){
 setTimeout(()=>{ setCloudUI('local','Modo Local • Guardado en este dispositivo'); }, 800);
 
 load(); fecha.value=today(); renderList(); onFormChange();
+
+// ===== NUBE FIREBASE ÚNICA (v48) =====
+async function cloudPull2(){
+  let inp = document.getElementById('cloudUrlInput');
+  let fb = inp ? inp.value.trim() : FIREBASE_URL;
+  if(fb){ FIREBASE_URL = fb; CLOUD_URL = fb; try{ localStorage.setItem('rosales_firebase_url', fb); }catch(e){} }
+  if(!FIREBASE_URL){ setCloudUI('local','Modo Local'); return; }
+  setCloudUI('sync','Conectando Firebase...');
+  let msg = document.getElementById('cloudMsg');
+  try{
+    let url = FIREBASE_URL.replace(/\/$/,'') + '/centro_optico.json?t=' + Date.now();
+    if(msg) msg.textContent = 'Probando Firebase...\n' + url;
+    let r = await fetch(url);
+    if(!r.ok) throw new Error('Firebase respondió ' + r.status + '. Revisa Reglas: { ".read": true, ".write": true } y Publicar.');
+    let d = await r.json();
+    if(d && Array.isArray(d.patients)){
+      patients = d.patients.map(x=>({...x, armazon: typeof x.armazon==='string'?{modelo:x.armazon}:x.armazon||{modelo:''}, estado: (x.estado && x.estado!=='undefined' ? x.estado : 'pendiente')}));
+      if(d.counter) counter = d.counter;
+      persist(); renderList(); renderTickets();
+      cloudOnline=true; setCloudUI('online','Nube Conectada • '+patients.length+' pacientes');
+      if(msg) msg.textContent = '✅ CONECTADO a Firebase.\nPacientes en nube: ' + patients.length;
+      return d;
+    } else if(d === null){
+      if(msg) msg.textContent = 'Firebase vacío, subiendo tus ' + patients.length + ' pacientes...';
+      await cloudPush();
+      cloudOnline=true; setCloudUI('online','Nube Conectada • '+patients.length+' pacientes');
+      if(msg) msg.textContent = '✅ CONECTADO. Subidos ' + patients.length + ' pacientes a Firebase.';
+      return {patients: patients};
+    } else {
+      throw new Error('Firebase devolvió algo raro: ' + JSON.stringify(d).slice(0,300));
+    }
+  }catch(e){
+    setCloudUI('local','Error Firebase');
+    if(msg) msg.textContent = '❌ Error Firebase: ' + e.message + '\nURL: ' + FIREBASE_URL + '\n\nRevisa en Firebase > Realtime Database > Reglas que tengas:\n{ ".read": true, ".write": true } y Publicar.';
+  }
+}
+async function cloudPush(){
+  if(!FIREBASE_URL) return;
+  if(Date.now()-lastPush < 2000) return;
+  lastPush = Date.now();
+  try{
+    let url = FIREBASE_URL.replace(/\/$/,'') + '/centro_optico.json';
+    await fetch(url, {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({patients: patients, counter: counter})});
+    cloudOnline=true; setCloudUI('online','Nube Conectada • '+patients.length+' pacientes');
+  }catch(e){ console.log('push error', e); }
+}
+function saveCloudUrl(){ cloudPull2(); }
+function testCloud(){ cloudPull2(); }
+function testCloudFromInput(){ cloudPull2(); }
+function disconnectCloud(){ FIREBASE_URL=''; CLOUD_URL=''; try{ localStorage.removeItem('rosales_firebase_url'); }catch(e){} cloudOnline=false; setCloudUI('local','Modo Local'); let m=document.getElementById('cloudMsg'); if(m) m.textContent='Desconectado. Ahora solo guarda en este dispositivo.'; }
+function cloudPullJSONP(){ return Promise.reject(new Error('Ya no se usa JSONP')); }
+setInterval(()=>{ if(FIREBASE_URL && cloudOnline) cloudPull2(); }, 30000);
+
 </script>
 </body>
 </html>
