@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f2b46">
-<title>v57 - Centro Óptico Rosales v57 FIX FIREBASE_URL</title>
+<title>v58 - Centro Óptico Rosales v58 PAPELERA</title>
 <style>
 :root{--navy:#0f2b46;--navy2:#173a5e;--gold:#c9a86a;--bg:#f4f5f7;--card:#fff;--border:#e5e7eb;--muted:#6b7b8d;--faint:#9aa8b8;--danger:#c03a2b}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--navy);font-family:Inter,system-ui,sans-serif;height:100%}
@@ -78,8 +78,8 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 <!-- FORM -->
 <div style="overflow:auto;background:var(--bg)" class="no-print smooth">
 <header style="height:56px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:10">
-<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales <span style='font-size:10px;background:#22c55e;color:#fff;padding:2px 6px;border-radius:999px;vertical-align:middle'>v57</span></div><div style="display:none">v23 leyenda oculta</div></div>
-<div style="display:flex;gap:6px"><button class="btn btn-gold" onclick="newClient()">Nuevo</button><span id="cloudStatus" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;font-size:11px"><span id="cloudDot" class="cloud-dot local"></span><span id="cloudText">Modo Local</span></span><button id="btnNube" class="btn btn-white" style="font-size:11px;padding:8px 10px" onclick="openCloudSetup()">☁️ Nube</button><button class="btn btn-white" onclick="document.getElementById('importFile').click()" style="font-size:11px;padding:8px 10px">📂 Importar</button><input type="file" id="importFile" accept=".json,.csv,.xls,.xlsx,.html" style="display:none" onchange="importOldFile(event)"><button class="btn btn-white" onclick="exportProfesional()">Exportar a Excel</button></div>
+<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales <span style='font-size:10px;background:#22c55e;color:#fff;padding:2px 6px;border-radius:999px;vertical-align:middle'>v58</span></div><div style="display:none">v23 leyenda oculta</div></div>
+<div style="display:flex;gap:6px"><button class="btn btn-gold" onclick="newClient()">Nuevo</button><span id="cloudStatus" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;font-size:11px"><span id="cloudDot" class="cloud-dot local"></span><span id="cloudText">Modo Local</span></span><button id="btnNube" class="btn btn-white" style="font-size:11px;padding:8px 10px" onclick="openCloudSetup()">☁️ Nube</button><button class="btn btn-white" onclick="document.getElementById('importFile').click()" style="font-size:11px;padding:8px 10px">📂 Importar</button><input type="file" id="importFile" accept=".json,.csv,.xls,.xlsx,.html" style="display:none" onchange="importOldFile(event)"><button class="btn btn-white" onclick="exportProfesional()">Exportar a Excel</button><button id="btnPapelera" class="btn btn-white" onclick="openTrash()" style="font-size:11px;padding:8px 10px">🗑️ Papelera</button></div>
 </header>
 
 <div style="padding:16px;max-width:800px;margin:0 auto">
@@ -139,7 +139,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 <div style="margin-top:12px"><label>Observaciones anotadas (aparece en ambos tickets)</label><textarea id="observaciones" rows="3" placeholder="Anota observaciones del paciente, lugar de jornada, forma de pago, etc." oninput="onFormChange()"></textarea></div>
 
 <div style="display:flex;gap:8px;margin-top:14px;position:sticky;bottom:0;background:rgba(255,255,255,.9);backdrop-filter:blur(8px);padding:10px 0">
-<button class="btn btn-navy" style="flex:1;padding:12px" onclick="save()">Guardar</button><button class="btn btn-white" style="padding:12px" onclick="openCloudSetup()">☁️ Nube</button>
+<button class="btn btn-navy" style="flex:1;padding:12px" onclick="save()">Guardar</button><button class="btn btn-white" style="padding:12px;color:#dc2626;border-color:#fecaca" onclick="deleteCurrentPatient()">🗑️ Eliminar</button><button class="btn btn-white" style="padding:12px" onclick="openCloudSetup()">☁️ Nube</button>
 <button class="btn btn-white" style="display:none" onclick="newClient()">Cancelar</button>
 </div>
 
@@ -176,6 +176,16 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 </div>
 
 
+
+<div id="trashModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center;padding:16px">
+  <div style="background:#fff;max-width:640px;width:100%;border-radius:16px;padding:20px;max-height:90vh;overflow:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">🗑️ Papelera - <span id="trashCount">0</span> pacientes</h3><button onclick="closeTrash()" style="border:0;background:#f3f4f6;border-radius:999px;width:32px;height:32px;cursor:pointer">✕</button></div>
+    <p style="font-size:12px;color:#666;line-height:1.5">Cuando eliminas un paciente, queda aquí. Puedes restaurarlo o borrarlo para siempre. La Papelera también se sincroniza con la nube.</p>
+    <div id="trashList"></div>
+    <div style="display:flex;gap:8px;margin-top:12px"><button class="btn btn-white" style="flex:1" onclick="closeTrash()">Cerrar</button><button class="btn btn-white" style="color:#dc2626" onclick="emptyTrash()">Vaciar Papelera</button></div>
+  </div>
+</div>
+
 <div id="cloudModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:9999;align-items:center;justify-content:center;padding:16px">
   <div style="background:#fff;max-width:640px;width:100%;border-radius:16px;padding:20px;max-height:90vh;overflow:auto">
     <div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">☁️ Conectar Nube - Tiempo Real</h3><button onclick="closeCloudSetup()" style="border:0;background:#f3f4f6;border-radius:999px;width:32px;height:32px;cursor:pointer">✕</button></div>
@@ -199,7 +209,7 @@ var FIREBASE_URL = 'https://centro-optico-rosales-4b197-default-rtdb.firebaseio.
 var CLOUD_URL = FIREBASE_URL;
 
 const LS_KEY="centro_optico_rosales_v3", LS_OLD="centro_optico_rosales_v2";
-let patients=[], counter=1, filter="todos", editing=null, active="venta";
+let patients=[], trash=[], counter=1, filter="todos", editing=null, active="venta";
 
 function today(){return new Date().toISOString().slice(0,10)}
 function fmt(d){if(!d)return"";let [y,m,dd]=d.split("-");return `${dd}/${m}/${y}`}
@@ -209,8 +219,8 @@ function num(v){let n=parseFloat(v);return isNaN(n)?0:n}
 function genFolio(c){return `COR-${String(c).padStart(4,"0")}`}
 function safe(t,a){return Math.max(0,num(t)-num(a))}
 
-function load(){try{let v3=localStorage.getItem(LS_KEY),v2=localStorage.getItem(LS_OLD);if(v3){let d=JSON.parse(v3);patients=d.patients||[];counter=d.counter||patients.length+1}else if(v2){let d=JSON.parse(v2);patients=(d.patients||[]).map(m=>({...m,armazon:typeof m.armazon==="string"?{modelo:m.armazon}:m.armazon||{modelo:""}}));counter=d.counter||patients.length+1}patients=patients.map(x=>({...x,armazon:typeof x.armazon==="string"?{modelo:x.armazon}:x.armazon||{modelo:""}}))}catch{}}
-function persist(){try{localStorage.setItem(LS_KEY,JSON.stringify({patients,counter}))}catch{}}
+function load(){try{let v3=localStorage.getItem(LS_KEY),v2=localStorage.getItem(LS_OLD);if(v3){let d=JSON.parse(v3);patients=d.patients||[];trash=d.trash||[];counter=d.counter||patients.length+1}else if(v2){let d=JSON.parse(v2);patients=(d.patients||[]).map(m=>({...m,armazon:typeof m.armazon==="string"?{modelo:m.armazon}:m.armazon||{modelo:""}}));trash=[];counter=d.counter||patients.length+1}patients=patients.map(x=>({...x,armazon:typeof x.armazon==="string"?{modelo:x.armazon}:x.armazon||{modelo:""}}));trash=trash.map(x=>({...x,armazon:typeof x.armazon==="string"?{modelo:x.armazon}:x.armazon||{modelo:""}}))}catch{}}
+function persist(){try{localStorage.setItem(LS_KEY,JSON.stringify({patients,trash,counter}))}catch{}}
 function setFilter(f){filter=f;renderList()}
 
 function fmtGradNum(v){ let n=parseFloat(v); if(isNaN(n)) n=0; let s=n.toFixed(2); if(n>0) s='+'+s; return s; }
@@ -271,7 +281,7 @@ function renderList(){
    <div style="font-weight:700;font-size:13px;margin-top:2px">${p.nombre||"Sin nombre"}</div>
    <div style="font-size:11px;color:var(--muted)">${fmt(p.fecha)} • ${p.armazon?.modelo||"-"} • Entrega ${fmt(p.fechaEntrega||addDays(p.fecha,15))}</div>
    <div style="font-size:10px;color:var(--faint);margin-top:2px">Total $${num(p.total)} • Anticipo $${num(p.anticipo)} • Saldo $${safe(p.total,p.anticipo)}</div>
-   <div style="display:flex;gap:6px;margin-top:8px"></div>
+   <div style="display:flex;gap:6px;margin-top:8px"><button class="btn btn-white" style="font-size:11px;padding:4px 8px;color:#dc2626" onclick="event.stopPropagation();deletePatient('${p.folio}')">🗑️ Eliminar</button></div>
   </div>`;
  });
  if(!html) html=`<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">Registra tu primer paciente con folio ${genFolio(counter)}. Venta + Lab ligados.</div>`;
@@ -439,6 +449,75 @@ function edit(folio){
  document.querySelector('.app').scrollTo({top:0,behavior:'smooth'});
  window.scrollTo({top:0,behavior:'smooth'});
 }
+
+function deletePatient(folio){
+  let idx = patients.findIndex(x=>x.folio===folio);
+  if(idx<0){ alert('No encontré ese paciente'); return; }
+  let p = patients[idx];
+  if(!confirm('¿Mandar a Papelera a '+ (p.nombre||folio) + '?\nQueda en Papelera y lo puedes restaurar. No se borra de golpe.')) return;
+  patients.splice(idx,1);
+  trash.unshift({...p, _deletedAt: new Date().toISOString(), _deletedDate: today()});
+  if(editing && editing.folio===folio){ editing=null; }
+  persist(); renderList(); renderTrash(); newClient();
+  try{ cloudPush(); }catch(e){}
+  alert('Listo. ' + (p.nombre||folio) + ' quedó en Papelera. Dale a Papelera para verlo o restaurarlo.');
+}
+function deleteCurrentPatient(){
+  if(!editing || !editing.folio){ alert('Primero abre un paciente para eliminarlo'); return; }
+  deletePatient(editing.folio);
+}
+function restorePatient(folio){
+  let idx = trash.findIndex(x=>x.folio===folio);
+  if(idx<0) return;
+  let p = trash[idx];
+  trash.splice(idx,1);
+  delete p._deletedAt; delete p._deletedDate;
+  if(patients.some(x=>x.folio===folio)){
+    p.folio = genFolio(counter); counter++;
+  }
+  patients.push(p);
+  persist(); renderList(); renderTrash();
+  try{ cloudPush(); }catch(e){}
+  alert('Restaurado: ' + (p.nombre||folio));
+}
+function deleteForever(folio){
+  let idx = trash.findIndex(x=>x.folio===folio);
+  if(idx<0) return;
+  let p = trash[idx];
+  if(!confirm('¿Borrar PARA SIEMPRE a '+ (p.nombre||folio) + '?\nYa no se puede recuperar.')) return;
+  trash.splice(idx,1);
+  persist(); renderTrash();
+  try{ cloudPush(); }catch(e){}
+}
+function emptyTrash(){
+  if(!trash.length){ alert('Papelera vacía'); return; }
+  if(!confirm('¿Vaciar toda la Papelera? Se borrarán PARA SIEMPRE ' + trash.length + ' pacientes.')) return;
+  trash = [];
+  persist(); renderTrash();
+  try{ cloudPush(); }catch(e){}
+  alert('Papelera vaciada.');
+}
+function renderTrash(){
+  let el = document.getElementById('trashList');
+  let cnt = document.getElementById('trashCount');
+  if(cnt) cnt.textContent = trash.length;
+  let btn = document.getElementById('btnPapelera');
+  if(btn) btn.innerHTML = '🗑️ Papelera' + (trash.length ? ' ('+trash.length+')' : '');
+  if(!el) return;
+  if(!trash.length){
+    el.innerHTML = '<div style="padding:20px;text-align:center;color:#666;font-size:13px">Papelera vacía.<br>Cuando eliminas un paciente, queda aquí y lo puedes restaurar.</div>';
+    return;
+  }
+  el.innerHTML = trash.map(p=>{
+    let del = p._deletedDate ? fmt(p._deletedDate) : '';
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid #eee;border-radius:10px;margin-bottom:8px;background:#fff">'
+      + '<div><div style="font-weight:700;font-size:13px">'+ (p.nombre||'Sin nombre') +'</div><div style="font-size:11px;color:#666">'+ p.folio +' • Eliminado '+ del +' • Total $'+ num(p.total) +'</div></div>'
+      + '<div style="display:flex;gap:6px"><button class="btn btn-white" style="font-size:11px;padding:6px 10px" onclick="restorePatient(\''+p.folio+'\')">Restaurar</button><button class="btn btn-white" style="font-size:11px;padding:6px 10px;color:#dc2626" onclick="deleteForever(\''+p.folio+'\')">Borrar para siempre</button></div></div>';
+  }).join('');
+}
+function openTrash(){ renderTrash(); var m=document.getElementById('trashModal'); if(m) m.style.display='flex'; }
+function closeTrash(){ var m=document.getElementById('trashModal'); if(m) m.style.display='none'; }
+
 
 
 function exportProfesional(){
@@ -807,8 +886,9 @@ async function cloudPull2(){
     let d = await r.json();
     if(d && Array.isArray(d.patients)){
       patients = d.patients.map(x=>({...x, armazon: typeof x.armazon==='string'?{modelo:x.armazon}:x.armazon||{modelo:''}, estado: (x.estado && x.estado!=='undefined' ? x.estado : 'pendiente')}));
+      if(Array.isArray(d.trash)) trash = d.trash;
       if(d.counter) counter = d.counter;
-      persist(); renderList(); renderTickets();
+      persist(); renderList(); renderTickets(); renderTrash();
       cloudOnline=true; setCloudUI('online','Nube Conectada - '+patients.length+' pacientes');
       if(msg) msg.textContent = 'CONECTADO a Firebase.\nPacientes en nube: ' + patients.length;
       return d;
@@ -845,7 +925,7 @@ async function cloudPush(){
   lastPush = Date.now();
   try{
     let url = FIREBASE_URL.replace(/\/$/,'') + '/centro_optico.json';
-    await fetch(url, {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({patients: patients, counter: counter})});
+    await fetch(url, {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({patients: patients, trash: trash, counter: counter})});
     cloudOnline=true; setCloudUI('online','Nube Conectada - '+patients.length+' pacientes');
   }catch(e){ console.log('push error', e); }
 }
