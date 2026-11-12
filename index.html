@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f2b46">
-<title>v61 - Centro Óptico Rosales v61 MOVIL PESTAÑAS</title>
+<title>v62 - Centro Óptico Rosales v62 MOVIL FORZADO</title>
 <style>
 :root{--navy:#0f2b46;--navy2:#173a5e;--gold:#c9a86a;--bg:#f4f5f7;--card:#fff;--border:#e5e7eb;--muted:#6b7b8d;--faint:#9aa8b8;--danger:#c03a2b}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--navy);font-family:Inter,system-ui,sans-serif;height:100%}
@@ -48,8 +48,10 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 .cloud-dot.sync{background:#3b82f6;animation:pulse 1s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-/* ===== MOVIL v61 - PESTAÑAS ===== */
-#mobileNav{ display:none; }
+/* ===== MOVIL v62 - PESTAÑAS FORZADO ===== */
+#mobileNav{ display:flex !important; }
+#versionBanner{ display:block !important; }
+@media(min-width:901px){ #mobileNav{ display:none !important; } #versionBanner{ display:none !important; } }
 @media(max-width:900px){
   #mobileNav{ display:flex !important; }
   .app{ display:block !important; height:auto !important; }
@@ -104,11 +106,13 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 </div>
 
 
-<div id="mobileNav" style="display:none;position:sticky;top:0;z-index:9997;background:#0f2b46;padding:8px;gap:8px">
+<div id="mobileNav" style="display:flex;position:sticky;top:0;z-index:9999;background:#0f2b46;padding:8px;gap:8px;border-bottom:3px solid #c9a86a">
   <button id="btnMobPacientes" onclick="showMobilePanel('pacientes')" style="flex:1;background:#fff;color:#0f2b46;border:0;padding:12px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer">👥 Pacientes</button>
   <button id="btnMobForm" onclick="showMobilePanel('form')" style="flex:1;background:#c9a86a;color:#0f2b46;border:0;padding:12px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer">📝 Nuevo / Editar</button>
   <button id="btnMobTickets" onclick="showMobilePanel('tickets')" style="flex:1;background:#fff;color:#0f2b46;border:0;padding:12px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer">🎫 Tickets</button>
 </div>
+
+<div id="versionBanner" style="background:#dc2626;color:#fff;text-align:center;font-weight:900;font-size:14px;padding:10px;position:sticky;top:0;z-index:10000">✅ YA ESTÁS EN v62 • SI NO VES ESTO, SIGUES EN LA VIEJA</div>
 
 <div class="app">
 <!-- LISTA -->
@@ -129,7 +133,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 <!-- FORM -->
 <div id="panelForm" style="overflow:auto;background:var(--bg)" class="no-print smooth mobile-panel">
 <header style="height:56px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:10">
-<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales <span style='font-size:10px;background:#22c55e;color:#fff;padding:2px 6px;border-radius:999px;vertical-align:middle'>v61</span></div><div style="display:none">v23 leyenda oculta</div></div>
+<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales <span style='font-size:10px;background:#22c55e;color:#fff;padding:2px 6px;border-radius:999px;vertical-align:middle'>v62</span></div><div style="display:none">v23 leyenda oculta</div></div>
 <div style="display:flex;gap:6px"><button class="btn btn-gold" onclick="newClient()">Nuevo</button><span id="cloudStatus" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;font-size:11px"><span id="cloudDot" class="cloud-dot local"></span><span id="cloudText">Modo Local</span></span><button id="btnNube" class="btn btn-white" style="font-size:11px;padding:8px 10px" onclick="openCloudSetup()">☁️ Nube</button><button class="btn btn-white" onclick="document.getElementById('importFile').click()" style="font-size:11px;padding:8px 10px">📂 Importar</button><input type="file" id="importFile" accept=".json,.csv,.xls,.xlsx,.html" style="display:none" onchange="importOldFile(event)"><button class="btn btn-white" onclick="exportProfesional()">Exportar a Excel</button><button id="btnPapelera" class="btn btn-white" onclick="openTrash()" style="font-size:11px;padding:8px 10px">🗑️ Papelera</button></div>
 </header>
 
@@ -415,7 +419,11 @@ window.addEventListener('resize', ()=>{
     });
   }
 });
-setTimeout(initMobilePanels, 200);
+initMobilePanels();
+setTimeout(initMobilePanels, 500);
+setTimeout(initMobilePanels, 1500);
+// Forzar barra movil si es cel aunque el CSS falle
+if(window.innerWidth<=900){ let mn=document.getElementById('mobileNav'); if(mn) mn.style.display='flex'; let vb=document.getElementById('versionBanner'); if(vb) vb.style.display='block'; }
 
 
 
