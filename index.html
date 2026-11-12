@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f2b46">
-<title>v58 - Centro Óptico Rosales v58 PAPELERA</title>
+<title>v59 - Centro Óptico Rosales v59 LOGIN SEGURO</title>
 <style>
 :root{--navy:#0f2b46;--navy2:#173a5e;--gold:#c9a86a;--bg:#f4f5f7;--card:#fff;--border:#e5e7eb;--muted:#6b7b8d;--faint:#9aa8b8;--danger:#c03a2b}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--navy);font-family:Inter,system-ui,sans-serif;height:100%}
@@ -59,6 +59,34 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
 </head>
 <body>
+<!-- LOGIN SEGURIDAD v59 -->
+<div id="loginOverlay" style="position:fixed;inset:0;background:#0f2b46;z-index:99999;display:flex;align-items:center;justify-content:center;padding:16px">
+  <div style="background:#fff;max-width:380px;width:100%;border-radius:20px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,.3);text-align:center">
+    <div style="font-size:28px;font-weight:900;color:#0f2b46;line-height:1.1">Centro Óptico<br>Rosales</div>
+    <div style="font-size:12px;color:#666;margin-top:6px">🔒 Acceso restringido<br>Solo personal autorizado</div>
+    <div style="text-align:left;margin-top:20px"><label style="font-size:11px;font-weight:700">USUARIO</label><input id="loginUser" placeholder="Ej. admin" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;margin-top:6px;font-size:14px" autocomplete="username"></div>
+    <div style="text-align:left;margin-top:12px"><label style="font-size:11px;font-weight:700">CONTRASEÑA</label><input id="loginPass" type="password" placeholder="Tu contraseña" style="width:100%;padding:12px;border:1px solid #ddd;border-radius:10px;margin-top:6px;font-size:14px" autocomplete="current-password" onkeydown="if(event.key==='Enter') doLogin()"></div>
+    <div id="loginError" style="display:none;color:#dc2626;font-size:12px;margin-top:10px;font-weight:700"></div>
+    <button onclick="doLogin()" style="width:100%;background:#0f2b46;color:#fff;border:0;padding:14px;border-radius:12px;font-size:15px;font-weight:800;margin-top:16px;cursor:pointer">🔓 Entrar</button>
+    <div style="font-size:11px;color:#999;margin-top:12px">Usuario inicial: <b>admin</b> / Contraseña: <b>rosales2026</b><br>Cámbialo en cuanto entres en Ajustes > Usuarios.</div>
+    <div style="font-size:11px;color:#666;margin-top:10px">Sesión guardada en este dispositivo.<br>Si cierras sesión, vuelve a pedir contraseña.</div>
+  </div>
+</div>
+<div id="userBar" style="display:none;position:fixed;top:60px;right:16px;z-index:9998;background:#fff;border:1px solid #eee;border-radius:999px;padding:6px 12px;font-size:11px;box-shadow:0 2px 10px rgba(0,0,0,.1)">👤 <span id="currentUserLabel">admin</span> • <a href="#" onclick="doLogout();return false" style="color:#dc2626;font-weight:700">Cerrar sesión</a> • <a href="#" onclick="openUsersModal();return false" style="color:#0f2b46;font-weight:700">Usuarios</a></div>
+<div id="usersModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100000;align-items:center;justify-content:center;padding:16px">
+  <div style="background:#fff;max-width:480px;width:100%;border-radius:16px;padding:20px;max-height:90vh;overflow:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center"><h3 style="margin:0">👥 Usuarios</h3><button onclick="closeUsersModal()" style="border:0;background:#f3f4f6;border-radius:999px;width:32px;height:32px;cursor:pointer">✕</button></div>
+    <p style="font-size:12px;color:#666">Aquí puedes agregar usuarios para tu negocio y cambiar contraseñas. Cada dispositivo pide usuario y contraseña la primera vez.</p>
+    <div id="usersList" style="margin-top:10px"></div>
+    <div style="border-top:1px solid #eee;margin-top:14px;padding-top:14px">
+      <div style="font-weight:800;font-size:13px">Agregar nuevo usuario</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px"><input id="newUserName" placeholder="Usuario (ej. maria)"><input id="newUserPass" placeholder="Contraseña" type="password"></div>
+      <button onclick="addUser()" style="width:100%;background:#0f2b46;color:#fff;border:0;padding:12px;border-radius:10px;margin-top:10px;font-weight:700;cursor:pointer">➕ Agregar usuario</button>
+    </div>
+    <div style="margin-top:14px"><button onclick="closeUsersModal()" style="width:100%;background:#f3f4f6;border:0;padding:12px;border-radius:10px;font-weight:700;cursor:pointer">Cerrar</button></div>
+  </div>
+</div>
+
 <div class="app">
 <!-- LISTA -->
 <div class="panel no-print">
@@ -78,7 +106,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 <!-- FORM -->
 <div style="overflow:auto;background:var(--bg)" class="no-print smooth">
 <header style="height:56px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:10">
-<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales <span style='font-size:10px;background:#22c55e;color:#fff;padding:2px 6px;border-radius:999px;vertical-align:middle'>v58</span></div><div style="display:none">v23 leyenda oculta</div></div>
+<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales <span style='font-size:10px;background:#22c55e;color:#fff;padding:2px 6px;border-radius:999px;vertical-align:middle'>v59</span></div><div style="display:none">v23 leyenda oculta</div></div>
 <div style="display:flex;gap:6px"><button class="btn btn-gold" onclick="newClient()">Nuevo</button><span id="cloudStatus" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;font-size:11px"><span id="cloudDot" class="cloud-dot local"></span><span id="cloudText">Modo Local</span></span><button id="btnNube" class="btn btn-white" style="font-size:11px;padding:8px 10px" onclick="openCloudSetup()">☁️ Nube</button><button class="btn btn-white" onclick="document.getElementById('importFile').click()" style="font-size:11px;padding:8px 10px">📂 Importar</button><input type="file" id="importFile" accept=".json,.csv,.xls,.xlsx,.html" style="display:none" onchange="importOldFile(event)"><button class="btn btn-white" onclick="exportProfesional()">Exportar a Excel</button><button id="btnPapelera" class="btn btn-white" onclick="openTrash()" style="font-size:11px;padding:8px 10px">🗑️ Papelera</button></div>
 </header>
 
@@ -207,6 +235,107 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 // FIREBASE al inicio para evitar TDZ
 var FIREBASE_URL = 'https://centro-optico-rosales-4b197-default-rtdb.firebaseio.com';
 var CLOUD_URL = FIREBASE_URL;
+
+// ===== SEGURIDAD v59 - LOGIN =====
+var USERS_KEY = 'rosales_usuarios_v59';
+var SESSION_KEY = 'rosales_sesion_v59';
+var DEFAULT_USERS = [{user:'admin', pass:'rosales2026', role:'admin'}];
+function getUsers(){
+  try{
+    let s = localStorage.getItem(USERS_KEY);
+    if(s){ let u = JSON.parse(s); if(Array.isArray(u) && u.length) return u; }
+  }catch(e){}
+  return JSON.parse(JSON.stringify(DEFAULT_USERS));
+}
+function saveUsers(u){ try{ localStorage.setItem(USERS_KEY, JSON.stringify(u)); }catch(e){} }
+function getSession(){
+  try{ return localStorage.getItem(SESSION_KEY) || ''; }catch(e){ return ''; }
+}
+function setSession(user){ try{ localStorage.setItem(SESSION_KEY, user); }catch(e){} }
+function clearSession(){ try{ localStorage.removeItem(SESSION_KEY); }catch(e){} }
+function doLogin(){
+  let u = (document.getElementById('loginUser').value||'').trim().toLowerCase();
+  let p = document.getElementById('loginPass').value||'';
+  let err = document.getElementById('loginError');
+  let users = getUsers();
+  let found = users.find(x=>x.user.toLowerCase()===u && x.pass===p);
+  if(!found){
+    if(err){ err.style.display='block'; err.textContent='❌ Usuario o contraseña incorrectos'; }
+    return;
+  }
+  setSession(found.user);
+  showApp(found.user);
+}
+function showApp(user){
+  let ov = document.getElementById('loginOverlay');
+  if(ov) ov.style.display='none';
+  let bar = document.getElementById('userBar');
+  if(bar) bar.style.display='flex';
+  let lbl = document.getElementById('currentUserLabel');
+  if(lbl) lbl.textContent = user || getSession() || 'admin';
+  // Si es admin, mostrar link Usuarios, si no, también pero solo ver
+}
+function doLogout(){
+  if(!confirm('¿Cerrar sesión? Vas a tener que poner usuario y contraseña para volver a entrar.')) return;
+  clearSession();
+  let ov = document.getElementById('loginOverlay');
+  if(ov) ov.style.display='flex';
+  let bar = document.getElementById('userBar');
+  if(bar) bar.style.display='none';
+  let inp = document.getElementById('loginPass'); if(inp) inp.value='';
+}
+function checkLoginOnStart(){
+  let s = getSession();
+  let users = getUsers();
+  if(s && users.some(x=>x.user.toLowerCase()===s.toLowerCase())){
+    showApp(s);
+  } else {
+    let ov = document.getElementById('loginOverlay');
+    if(ov) ov.style.display='flex';
+  }
+}
+function openUsersModal(){
+  let users = getUsers();
+  let el = document.getElementById('usersList');
+  if(el){
+    el.innerHTML = users.map((u,i)=>{
+      return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid #eee;border-radius:10px;margin-bottom:8px"><div><b>'+u.user+'</b> <span style="font-size:11px;color:#666">• '+ (u.role||'usuario') +'</span></div><div style="display:flex;gap:6px"><button onclick="changeUserPass(\''+u.user+'\')" style="border:1px solid #ddd;background:#fff;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:11px">Cambiar contraseña</button>' + (u.user!=='admin' ? '<button onclick="removeUser(\''+u.user+'\')" style="border:1px solid #fecaca;background:#fff;color:#dc2626;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:11px">Eliminar</button>' : '') + '</div></div>';
+    }).join('');
+  }
+  let m = document.getElementById('usersModal'); if(m) m.style.display='flex';
+}
+function closeUsersModal(){ let m=document.getElementById('usersModal'); if(m) m.style.display='none'; }
+function addUser(){
+  let name = (document.getElementById('newUserName').value||'').trim().toLowerCase();
+  let pass = document.getElementById('newUserPass').value||'';
+  if(!name || !pass){ alert('Pon usuario y contraseña'); return; }
+  if(name.length<3){ alert('Usuario mínimo 3 letras'); return; }
+  if(pass.length<4){ alert('Contraseña mínimo 4 caracteres'); return; }
+  let users = getUsers();
+  if(users.some(x=>x.user.toLowerCase()===name)){ alert('Ese usuario ya existe'); return; }
+  users.push({user:name, pass:pass, role:'usuario'});
+  saveUsers(users);
+  document.getElementById('newUserName').value=''; document.getElementById('newUserPass').value='';
+  openUsersModal();
+  alert('Usuario '+name+' creado. Ya puede entrar con esa contraseña.');
+}
+function changeUserPass(user){
+  let np = prompt('Nueva contraseña para '+user+':');
+  if(!np) return;
+  if(np.length<4){ alert('Mínimo 4 caracteres'); return; }
+  let users = getUsers();
+  let f = users.find(x=>x.user===user);
+  if(f){ f.pass = np; saveUsers(users); openUsersModal(); alert('Contraseña cambiada para '+user); }
+}
+function removeUser(user){
+  if(user==='admin'){ alert('No puedes eliminar al admin'); return; }
+  if(!confirm('¿Eliminar usuario '+user+'?')) return;
+  let users = getUsers().filter(x=>x.user!==user);
+  saveUsers(users); openUsersModal();
+}
+// Al cargar, verificar login
+setTimeout(checkLoginOnStart, 100);
+
 
 const LS_KEY="centro_optico_rosales_v3", LS_OLD="centro_optico_rosales_v2";
 let patients=[], trash=[], counter=1, filter="todos", editing=null, active="venta";
