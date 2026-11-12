@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f2b46">
-<title>v60 - Centro Óptico Rosales v60 USUARIO ABAJO</title>
+<title>v61 - Centro Óptico Rosales v61 MOVIL PESTAÑAS</title>
 <style>
 :root{--navy:#0f2b46;--navy2:#173a5e;--gold:#c9a86a;--bg:#f4f5f7;--card:#fff;--border:#e5e7eb;--muted:#6b7b8d;--faint:#9aa8b8;--danger:#c03a2b}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--navy);font-family:Inter,system-ui,sans-serif;height:100%}
@@ -47,6 +47,22 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 .cloud-dot.local{background:#f59e0b;box-shadow:0 0 0 3px rgba(245,158,11,.25)}
 .cloud-dot.sync{background:#3b82f6;animation:pulse 1s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ===== MOVIL v61 - PESTAÑAS ===== */
+#mobileNav{ display:none; }
+@media(max-width:900px){
+  #mobileNav{ display:flex !important; }
+  .app{ display:block !important; height:auto !important; }
+  .mobile-panel{ display:none !important; }
+  .mobile-panel.mobile-active{ display:block !important; max-height:none !important; height:auto !important; overflow:visible !important; }
+  .panel{ max-height:none !important; border-right:0; border-bottom:1px solid var(--border); }
+  /* Header del formulario que se encoge en cel */
+  #panelForm header{ flex-wrap:wrap; height:auto !important; padding:10px !important; gap:8px; }
+  #panelForm header > div:first-child{ width:100%; }
+  #panelForm header > div:last-child{ flex-wrap:wrap; }
+  #panelForm header .btn{ font-size:11px; padding:8px 10px; }
+}
+
 </style>
 
 <style>.ocultar-captura{display:none !important}
@@ -87,9 +103,16 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
   </div>
 </div>
 
+
+<div id="mobileNav" style="display:none;position:sticky;top:0;z-index:9997;background:#0f2b46;padding:8px;gap:8px">
+  <button id="btnMobPacientes" onclick="showMobilePanel('pacientes')" style="flex:1;background:#fff;color:#0f2b46;border:0;padding:12px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer">👥 Pacientes</button>
+  <button id="btnMobForm" onclick="showMobilePanel('form')" style="flex:1;background:#c9a86a;color:#0f2b46;border:0;padding:12px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer">📝 Nuevo / Editar</button>
+  <button id="btnMobTickets" onclick="showMobilePanel('tickets')" style="flex:1;background:#fff;color:#0f2b46;border:0;padding:12px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer">🎫 Tickets</button>
+</div>
+
 <div class="app">
 <!-- LISTA -->
-<div class="panel no-print">
+<div id="panelPacientes" class="panel no-print mobile-panel">
 <div class="head"><span>CLIENTES • <span id="count">0</span></span><span id="counterView" class="mono" style="color:var(--muted);font-weight:400"></span></div>
 <div style="padding:12px">
 <input id="q" placeholder="Buscar nombre, folio, armazón..." oninput="renderList()" style="padding:10px 12px">
@@ -104,9 +127,9 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 </div>
 
 <!-- FORM -->
-<div style="overflow:auto;background:var(--bg)" class="no-print smooth">
+<div id="panelForm" style="overflow:auto;background:var(--bg)" class="no-print smooth mobile-panel">
 <header style="height:56px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:10">
-<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales <span style='font-size:10px;background:#22c55e;color:#fff;padding:2px 6px;border-radius:999px;vertical-align:middle'>v60</span></div><div style="display:none">v23 leyenda oculta</div></div>
+<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales <span style='font-size:10px;background:#22c55e;color:#fff;padding:2px 6px;border-radius:999px;vertical-align:middle'>v61</span></div><div style="display:none">v23 leyenda oculta</div></div>
 <div style="display:flex;gap:6px"><button class="btn btn-gold" onclick="newClient()">Nuevo</button><span id="cloudStatus" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;font-size:11px"><span id="cloudDot" class="cloud-dot local"></span><span id="cloudText">Modo Local</span></span><button id="btnNube" class="btn btn-white" style="font-size:11px;padding:8px 10px" onclick="openCloudSetup()">☁️ Nube</button><button class="btn btn-white" onclick="document.getElementById('importFile').click()" style="font-size:11px;padding:8px 10px">📂 Importar</button><input type="file" id="importFile" accept=".json,.csv,.xls,.xlsx,.html" style="display:none" onchange="importOldFile(event)"><button class="btn btn-white" onclick="exportProfesional()">Exportar a Excel</button><button id="btnPapelera" class="btn btn-white" onclick="openTrash()" style="font-size:11px;padding:8px 10px">🗑️ Papelera</button></div>
 </header>
 
@@ -176,7 +199,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 </div>
 
 <!-- TICKETS -->
-<div class="panel panel-right no-print">
+<div id="panelTickets" class="panel panel-right no-print mobile-panel">
 <div class="head"><span>TICKETS LIGADOS</span><span class="mono" style="font-size:9px;color:var(--faint)">58mm</span></div>
 <div class="scroll" style="display:flex;flex-direction:column;gap:12px">
 
@@ -335,6 +358,65 @@ function removeUser(user){
 }
 // Al cargar, verificar login
 setTimeout(checkLoginOnStart, 100);
+
+// ===== MOVIL v61 - PESTAÑAS =====
+function showMobilePanel(which){
+  let isMobile = window.innerWidth <= 900;
+  // En compu no hace nada, se ven las 3 columnas
+  if(!isMobile) return;
+  let map = {pacientes:'panelPacientes', form:'panelForm', tickets:'panelTickets'};
+  ['panelPacientes','panelForm','panelTickets'].forEach(id=>{
+    let el = document.getElementById(id);
+    if(el) el.classList.remove('mobile-active');
+  });
+  let target = document.getElementById(map[which]);
+  if(target) target.classList.add('mobile-active');
+  // Pintar botón activo
+  ['btnMobPacientes','btnMobForm','btnMobTickets'].forEach(id=>{
+    let b = document.getElementById(id);
+    if(b) b.style.background = '#fff';
+  });
+  let activeBtn = document.getElementById(which==='pacientes' ? 'btnMobPacientes' : which==='form' ? 'btnMobForm' : 'btnMobTickets');
+  if(activeBtn) activeBtn.style.background = '#c9a86a';
+  window.scrollTo({top:0, behavior:'smooth'});
+  try{ document.querySelector('.app').scrollTo({top:0}); }catch(e){}
+}
+function initMobilePanels(){
+  if(window.innerWidth <= 900){
+    // En cel, empezar en Formulario (Nuevo) para que no solo vea pacientes y tickets
+    showMobilePanel('form');
+  } else {
+    // En compu, mostrar todo
+    ['panelPacientes','panelForm','panelTickets'].forEach(id=>{
+      let el = document.getElementById(id);
+      if(el) el.classList.add('mobile-active');
+    });
+  }
+}
+// Cuando le das a un paciente en la lista, en cel salta al formulario
+let _origEdit = edit;
+edit = function(folio){
+  _origEdit(folio);
+  if(window.innerWidth <= 900) showMobilePanel('form');
+};
+// Cuando le das Guardar, en cel salta a Tickets para imprimir
+let _origSave = save;
+save = function(){
+  _origSave();
+  if(window.innerWidth <= 900){
+    setTimeout(()=>{ showMobilePanel('tickets'); }, 300);
+  }
+};
+window.addEventListener('resize', ()=>{
+  if(window.innerWidth > 900){
+    ['panelPacientes','panelForm','panelTickets'].forEach(id=>{
+      let el = document.getElementById(id);
+      if(el) el.classList.add('mobile-active');
+    });
+  }
+});
+setTimeout(initMobilePanels, 200);
+
 
 
 const LS_KEY="centro_optico_rosales_v3", LS_OLD="centro_optico_rosales_v2";
