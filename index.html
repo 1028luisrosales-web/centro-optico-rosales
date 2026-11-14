@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f2b46">
-<title>v66 - Centro Óptico Rosales v66 ESTADO VISIBLE</title>
+<title>v67 - Centro Óptico Rosales v67 ENTREGA HABILES</title>
 <style>
 :root{--navy:#0f2b46;--navy2:#173a5e;--gold:#c9a86a;--bg:#f4f5f7;--card:#fff;--border:#e5e7eb;--muted:#6b7b8d;--faint:#9aa8b8;--danger:#c03a2b}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--navy);font-family:Inter,system-ui,sans-serif;height:100%}
@@ -126,7 +126,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 <!-- FORM -->
 <div id="panelForm" style="overflow:auto;background:var(--bg)" class="no-print smooth mobile-panel">
 <header style="height:56px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:10">
-<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales <span style='font-size:10px;background:#22c55e;color:#fff;padding:2px 6px;border-radius:999px;vertical-align:middle'>v66</span></div><div style="display:none">v23 leyenda oculta</div></div>
+<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales <span style='font-size:10px;background:#22c55e;color:#fff;padding:2px 6px;border-radius:999px;vertical-align:middle'>v67</span></div><div style="display:none">v23 leyenda oculta</div></div>
 <div style="display:flex;gap:6px"><button class="btn btn-gold" onclick="newClient()">Nuevo</button><span id="cloudStatus" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;font-size:11px"><span id="cloudDot" class="cloud-dot local"></span><span id="cloudText">Modo Local</span></span><button id="btnNube" class="btn btn-white" style="font-size:11px;padding:8px 10px" onclick="openCloudSetup()">☁️ Nube</button><button class="btn btn-white" onclick="document.getElementById('importFile').click()" style="font-size:11px;padding:8px 10px">📂 Importar</button><input type="file" id="importFile" accept=".json,.csv,.xls,.xlsx,.html" style="display:none" onchange="importOldFile(event)"><button class="btn btn-white" onclick="exportProfesional()">Exportar a Excel</button><button id="btnPapelera" class="btn btn-white" onclick="openTrash()" style="font-size:11px;padding:8px 10px">🗑️ Papelera</button></div>
 </header>
 
@@ -180,7 +180,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 </div>
 
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
-<div><label>Fecha entrega (fija +15 días)</label><input id="fechaEntrega" type="date" readonly style="background:#fffbeb;border-color:#fde68a;font-weight:700"></div>
+<div><label>Fecha entrega (15 días hábiles)</label><input id="fechaEntrega" type="date" readonly style="background:#fffbeb;border-color:#fde68a;font-weight:700"></div>
 <div style="display:none"><label>Lugar de jornada</label><input id="jornada" placeholder="Ej. T-III Centro, Deportivo..." oninput="onFormChange()"></div>
 </div>
 
@@ -462,7 +462,7 @@ let patients=[], trash=[], counter=1, filter="todos", editing=null, active="vent
 
 function today(){return new Date().toISOString().slice(0,10)}
 function fmt(d){if(!d)return"";let [y,m,dd]=d.split("-");return `${dd}/${m}/${y}`}
-function addDays(dateStr, days){if(!dateStr)return"";let d=new Date(dateStr+"T00:00:00");d.setDate(d.getDate()+days);return d.toISOString().slice(0,10)}
+function addDays(dateStr, days){return addBusinessDays(dateStr, days)} function addBusinessDays(dateStr, days){if(!dateStr)return"";let d=new Date(dateStr+"T00:00:00");let added=0;while(added<days){d.setDate(d.getDate()+1);let wd=d.getDay();if(wd!==0 && wd!==6) added++;}return d.toISOString().slice(0,10)}
 function norm(s){return (s||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"")}
 function num(v){let n=parseFloat(v);return isNaN(n)?0:n}
 function genFolio(c){return `COR-${String(c).padStart(4,"0")}`}
