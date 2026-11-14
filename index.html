@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f2b46">
-<title>v65 - Centro Óptico Rosales v65 USUARIOS NUBE</title>
+<title>v66 - Centro Óptico Rosales v66 ESTADO VISIBLE</title>
 <style>
 :root{--navy:#0f2b46;--navy2:#173a5e;--gold:#c9a86a;--bg:#f4f5f7;--card:#fff;--border:#e5e7eb;--muted:#6b7b8d;--faint:#9aa8b8;--danger:#c03a2b}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--navy);font-family:Inter,system-ui,sans-serif;height:100%}
@@ -118,12 +118,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 <div class="head"><span>CLIENTES • <span id="count">0</span></span><span id="counterView" class="mono" style="color:var(--muted);font-weight:400"></span></div>
 <div style="padding:12px">
 <input id="q" placeholder="Buscar nombre, folio, armazón..." oninput="renderList()" style="padding:10px 12px">
-<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap">
-<button style="display:none" style="display:none" onclick="setFilter('todos')" class="btn btn-white" style="font-size:10px;padding:4px 8px">TODOS</button>
-<button style="display:none" onclick="setFilter(\'pendiente\')"PEND</button>
-<button style="display:none" onclick="setFilter(\'en laboratorio\')"LAB</button>
-<button style="display:none" onclick="setFilter(\'listo\')"LISTO</button>
-</div>
+<div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap"><button onclick="setFilter('todos')" class="btn btn-white" style="font-size:10px;padding:6px 10px">TODOS</button><button onclick="setFilter('pendiente')" class="btn btn-white" style="font-size:10px;padding:6px 10px">⏳ Pendiente</button><button onclick="setFilter('en laboratorio')" class="btn btn-white" style="font-size:10px;padding:6px 10px">🧪 Lab</button><button onclick="setFilter('listo')" class="btn btn-white" style="font-size:10px;padding:6px 10px">✅ Listo</button><button onclick="setFilter('entregado')" class="btn btn-white" style="font-size:10px;padding:6px 10px">📦 Entregado</button><button onclick="setFilter('garantia')" class="btn btn-white" style="font-size:10px;padding:6px 10px">🛡️ Garantía</button></div>
 </div>
 <div id="list" class="scroll" style="display:flex;flex-direction:column;gap:8px"></div>
 </div>
@@ -131,7 +126,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 <!-- FORM -->
 <div id="panelForm" style="overflow:auto;background:var(--bg)" class="no-print smooth mobile-panel">
 <header style="height:56px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:10">
-<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales <span style='font-size:10px;background:#22c55e;color:#fff;padding:2px 6px;border-radius:999px;vertical-align:middle'>v65</span></div><div style="display:none">v23 leyenda oculta</div></div>
+<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales <span style='font-size:10px;background:#22c55e;color:#fff;padding:2px 6px;border-radius:999px;vertical-align:middle'>v66</span></div><div style="display:none">v23 leyenda oculta</div></div>
 <div style="display:flex;gap:6px"><button class="btn btn-gold" onclick="newClient()">Nuevo</button><span id="cloudStatus" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;font-size:11px"><span id="cloudDot" class="cloud-dot local"></span><span id="cloudText">Modo Local</span></span><button id="btnNube" class="btn btn-white" style="font-size:11px;padding:8px 10px" onclick="openCloudSetup()">☁️ Nube</button><button class="btn btn-white" onclick="document.getElementById('importFile').click()" style="font-size:11px;padding:8px 10px">📂 Importar</button><input type="file" id="importFile" accept=".json,.csv,.xls,.xlsx,.html" style="display:none" onchange="importOldFile(event)"><button class="btn btn-white" onclick="exportProfesional()">Exportar a Excel</button><button id="btnPapelera" class="btn btn-white" onclick="openTrash()" style="font-size:11px;padding:8px 10px">🗑️ Papelera</button></div>
 </header>
 
@@ -181,7 +176,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 <div><label>Total venta</label><input id="total" type="number" placeholder="0" oninput="onFormChange()"></div>
 <div><label>Anticipo</label><input id="anticipo" type="number" placeholder="0" oninput="onFormChange()"></div>
 <div><label>Saldo</label><div id="saldo" style="padding:9px 11px;background:#f4f5f7;border-radius:10px;font-weight:800">$0 MXN</div></div>
-<div style="display:none"><label>Estado</label><select id="estado" onchange="onFormChange()"><option value="pendiente">Pendiente</option><option value="en laboratorio">En laboratorio</option><option value="listo">Listo</option><option value="entregado">Entregado</option></select></div>
+<div><label>Estado</label><select id="estado" onchange="onFormChange();syncEstadoBtns()" style="display:none"><option value="pendiente">Pendiente</option><option value="en laboratorio">En laboratorio</option><option value="listo">Listo</option><option value="entregado">Entregado</option><option value="garantia">Garantía</option></select><div id="estadoBtns" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:2px"><button type="button" onclick="setEstado('pendiente')" data-estado="pendiente" style="flex:1;border:1px solid #e5e7eb;background:#fff;padding:10px 6px;border-radius:10px;font-weight:800;font-size:11px;cursor:pointer">⏳ Pendiente</button><button type="button" onclick="setEstado('en laboratorio')" data-estado="en laboratorio" style="flex:1;border:1px solid #e5e7eb;background:#fff;padding:10px 6px;border-radius:10px;font-weight:800;font-size:11px;cursor:pointer">🧪 En Lab</button><button type="button" onclick="setEstado('listo')" data-estado="listo" style="flex:1;border:1px solid #e5e7eb;background:#fff;padding:10px 6px;border-radius:10px;font-weight:800;font-size:11px;cursor:pointer">✅ Listo</button><button type="button" onclick="setEstado('entregado')" data-estado="entregado" style="flex:1;border:1px solid #e5e7eb;background:#fff;padding:10px 6px;border-radius:10px;font-weight:800;font-size:11px;cursor:pointer">📦 Entregado</button><button type="button" onclick="setEstado('garantia')" data-estado="garantia" style="flex:1;border:1px solid #e5e7eb;background:#fff;padding:10px 6px;border-radius:10px;font-weight:800;font-size:11px;cursor:pointer">🛡️ Garantía</button></div></div>
 </div>
 
 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
@@ -373,6 +368,30 @@ function removeUser(user){
 }
 // Al cargar, verificar login
 setTimeout(checkLoginOnStart, 100);
+
+// ===== ESTADO v66 - BOTONES =====
+function setEstado(v){
+  let sel = document.getElementById('estado');
+  if(sel) sel.value = v;
+  syncEstadoBtns();
+  try{ onFormChange(); }catch(e){}
+}
+function syncEstadoBtns(){
+  let cur = (document.getElementById('estado')||{}).value || 'pendiente';
+  document.querySelectorAll('#estadoBtns button').forEach(b=>{
+    let isActive = b.getAttribute('data-estado')===cur;
+    if(isActive){ b.style.background='#0f2b46'; b.style.color='#fff'; b.style.borderColor='#0f2b46'; }
+    else { b.style.background='#fff'; b.style.color='#0f2b46'; b.style.borderColor='#e5e7eb'; }
+  });
+}
+// Cuando se abre un paciente, actualizar botones de estado
+let _origSetForm = setForm;
+setForm = function(p){
+  _origSetForm(p);
+  setTimeout(syncEstadoBtns, 50);
+};
+setTimeout(syncEstadoBtns, 500);
+
 
 // ===== MOVIL v61 - PESTAÑAS =====
 function showMobilePanel(which){
