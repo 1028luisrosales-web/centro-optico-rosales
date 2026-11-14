@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f2b46">
-<title>v64 - Centro Óptico Rosales v64 SIN LETRERO</title>
+<title>v65 - Centro Óptico Rosales v65 USUARIOS NUBE</title>
 <style>
 :root{--navy:#0f2b46;--navy2:#173a5e;--gold:#c9a86a;--bg:#f4f5f7;--card:#fff;--border:#e5e7eb;--muted:#6b7b8d;--faint:#9aa8b8;--danger:#c03a2b}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--navy);font-family:Inter,system-ui,sans-serif;height:100%}
@@ -131,7 +131,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 <!-- FORM -->
 <div id="panelForm" style="overflow:auto;background:var(--bg)" class="no-print smooth mobile-panel">
 <header style="height:56px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:10">
-<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales <span style='font-size:10px;background:#22c55e;color:#fff;padding:2px 6px;border-radius:999px;vertical-align:middle'>v64</span></div><div style="display:none">v23 leyenda oculta</div></div>
+<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales <span style='font-size:10px;background:#22c55e;color:#fff;padding:2px 6px;border-radius:999px;vertical-align:middle'>v65</span></div><div style="display:none">v23 leyenda oculta</div></div>
 <div style="display:flex;gap:6px"><button class="btn btn-gold" onclick="newClient()">Nuevo</button><span id="cloudStatus" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;font-size:11px"><span id="cloudDot" class="cloud-dot local"></span><span id="cloudText">Modo Local</span></span><button id="btnNube" class="btn btn-white" style="font-size:11px;padding:8px 10px" onclick="openCloudSetup()">☁️ Nube</button><button class="btn btn-white" onclick="document.getElementById('importFile').click()" style="font-size:11px;padding:8px 10px">📂 Importar</button><input type="file" id="importFile" accept=".json,.csv,.xls,.xlsx,.html" style="display:none" onchange="importOldFile(event)"><button class="btn btn-white" onclick="exportProfesional()">Exportar a Excel</button><button id="btnPapelera" class="btn btn-white" onclick="openTrash()" style="font-size:11px;padding:8px 10px">🗑️ Papelera</button></div>
 </header>
 
@@ -272,7 +272,7 @@ function getUsers(){
   }catch(e){}
   return JSON.parse(JSON.stringify(DEFAULT_USERS));
 }
-function saveUsers(u){ try{ localStorage.setItem(USERS_KEY, JSON.stringify(u)); }catch(e){} }
+function saveUsers(u){ try{ localStorage.setItem(USERS_KEY, JSON.stringify(u)); }catch(e){} try{ if(typeof cloudPush==='function') cloudPush(); }catch(e){} }
 function getSession(){
   try{ return localStorage.getItem(SESSION_KEY) || ''; }catch(e){ return ''; }
 }
@@ -319,7 +319,20 @@ function checkLoginOnStart(){
     if(ov) ov.style.display='flex';
   }
 }
+
+function renderUsersList(){
+  let users = getUsers();
+  let el = document.getElementById('usersList');
+  if(!el) return;
+  el.innerHTML = users.map((u,i)=>{
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:10px;border:1px solid #eee;border-radius:10px;margin-bottom:8px"><div><b>'+u.user+'</b> <span style="font-size:11px;color:#666">• '+ (u.role||'usuario') +'</span></div><div style="display:flex;gap:6px"><button onclick="changeUserPass(\''+u.user+'\')" style="border:1px solid #ddd;background:#fff;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:11px">Cambiar contraseña</button>' + (u.user!=='admin' ? '<button onclick="removeUser(\''+u.user+'\')" style="border:1px solid #fecaca;background:#fff;color:#dc2626;padding:6px 10px;border-radius:8px;cursor:pointer;font-size:11px">Eliminar</button>' : '') + '</div></div>';
+  }).join('');
+}
+
 function openUsersModal(){
+  // Si hay nube, intentar traer usuarios antes de mostrar
+  try{ if(typeof cloudPull2==='function' && typeof FIREBASE_URL!=='undefined' && FIREBASE_URL){ cloudPull2().then(()=>{ try{ renderUsersList(); }catch(e){} }); } }catch(e){}
+
   let users = getUsers();
   let el = document.getElementById('usersList');
   if(el){
@@ -1104,6 +1117,8 @@ async function cloudPull2(){
     if(d && Array.isArray(d.patients)){
       patients = d.patients.map(x=>({...x, armazon: typeof x.armazon==='string'?{modelo:x.armazon}:x.armazon||{modelo:''}, estado: (x.estado && x.estado!=='undefined' ? x.estado : 'pendiente')}));
       if(Array.isArray(d.trash)) trash = d.trash;
+      if(Array.isArray(d.usuarios) && d.usuarios.length){ try{ localStorage.setItem(USERS_KEY, JSON.stringify(d.usuarios)); }catch(e){} }
+      else if(Array.isArray(d.users) && d.users.length){ try{ localStorage.setItem(USERS_KEY, JSON.stringify(d.users)); }catch(e){} }
       if(d.counter) counter = d.counter;
       persist(); renderList(); renderTickets(); renderTrash();
       cloudOnline=true; setCloudUI('online','Nube Conectada - '+patients.length+' pacientes');
@@ -1142,7 +1157,7 @@ async function cloudPush(){
   lastPush = Date.now();
   try{
     let url = FIREBASE_URL.replace(/\/$/,'') + '/centro_optico.json';
-    await fetch(url, {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({patients: patients, trash: trash, counter: counter})});
+    await fetch(url, {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({patients: patients, trash: trash, counter: counter, usuarios: (function(){ try{ return JSON.parse(localStorage.getItem(USERS_KEY)||'[]'); }catch(e){ return [{user:'admin', pass:'rosales2026', role:'admin'}]; } })()})});
     cloudOnline=true; setCloudUI('online','Nube Conectada - '+patients.length+' pacientes');
   }catch(e){ console.log('push error', e); }
 }
