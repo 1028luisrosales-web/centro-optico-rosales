@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f2b46">
-<title>v70 - Centro Óptico Rosales v70 PDF 58MM iOS</title>
+<title>v71 - Centro Óptico Rosales v71 IMPRESION ORIGINAL</title>
 <style>
 :root{--navy:#0f2b46;--navy2:#173a5e;--gold:#c9a86a;--bg:#f4f5f7;--card:#fff;--border:#e5e7eb;--muted:#6b7b8d;--faint:#9aa8b8;--danger:#c03a2b}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--navy);font-family:Inter,system-ui,sans-serif;height:100%}
@@ -32,7 +32,14 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 .tab button{flex:1;border:0;background:transparent;padding:7px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;transition:.15s}
 .tab button.active{background:var(--navy);color:#fff}
 .smooth{scroll-behavior:smooth}
-@media print{ .no-print{display:none !important} @page{margin:0;size:58mm auto} html,body{margin:0!important;padding:0!important;background:#fff!important;width:58mm!important;height:auto!important;overflow:visible!important} .app,.panel{height:auto!important;max-height:none!important;overflow:visible!important} body > *:not(#print-area){display:none!important;height:0!important;overflow:hidden!important} #print-area{display:block!important;position:static!important;left:0!important;top:0!important;width:58mm!important;max-width:58mm!important;height:auto!important;margin:0!important;padding:0!important;background:#fff!important;overflow:visible!important} #print-content{width:58mm!important;max-width:58mm!important;padding:2mm!important;display:block!important;height:auto!important;overflow:visible!important} .ticket-58mm{width:58mm!important;max-width:58mm!important} }
+@media print{ .no-print{display:none !important}
+ @page{margin:0;size:58mm auto}
+ html,body{margin:0!important;padding:0!important;background:#fff!important;width:58mm!important}
+ body > *:not(#print-area){display:none!important}
+ #print-area{display:block!important;position:absolute!important;left:0!important;top:0!important;width:58mm!important;margin:0!important;padding:0!important;background:#fff!important}
+ #print-content{width:58mm!important;padding:2mm!important;display:block!important}
+ .ticket-58mm{width:58mm!important}
+}
 @media(max-width:1100px){.app{grid-template-columns:1fr;height:auto}.panel{height:auto;max-height:60vh}.panel-right{max-height:none}}
 
 .cloud-dot{width:8px;height:8px;border-radius:50%;display:inline-block}
@@ -119,7 +126,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 <!-- FORM -->
 <div id="panelForm" style="overflow:auto;background:var(--bg)" class="no-print smooth mobile-panel">
 <header style="height:56px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:10">
-<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales <span style='font-size:10px;background:#22c55e;color:#fff;padding:2px 6px;border-radius:999px;vertical-align:middle'>v70</span></div><div style="display:none">v23 leyenda oculta</div></div>
+<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales <span style='font-size:10px;background:#22c55e;color:#fff;padding:2px 6px;border-radius:999px;vertical-align:middle'>v71</span></div><div style="display:none">v23 leyenda oculta</div></div>
 <div style="display:flex;gap:6px"><button class="btn btn-gold" onclick="newClient()">Nuevo</button><span id="cloudStatus" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;font-size:11px"><span id="cloudDot" class="cloud-dot local"></span><span id="cloudText">Modo Local</span></span><button id="btnNube" class="btn btn-white" style="font-size:11px;padding:8px 10px" onclick="openCloudSetup()">☁️ Nube</button><button class="btn btn-white" onclick="document.getElementById('importFile').click()" style="font-size:11px;padding:8px 10px">📂 Importar</button><input type="file" id="importFile" accept=".json,.csv,.xls,.xlsx,.html" style="display:none" onchange="importOldFile(event)"><button class="btn btn-white" onclick="exportProfesional()">Exportar a Excel</button><button id="btnPapelera" class="btn btn-white" onclick="openTrash()" style="font-size:11px;padding:8px 10px">🗑️ Papelera</button></div>
 </header>
 
@@ -198,7 +205,10 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 <div id="preview-venta" class="ticket-print-area" style="margin:0 auto;width:240px;background:#fff;border-radius:12px;padding:12px;box-shadow:0 8px 24px rgba(0,0,0,.12)"><div class="ticket-mono ticket-58mm" id="t-venta" style="width:216px"></div></div>
 <div id="preview-lab" class="ticket-print-area" style="display:none;margin:0 auto;width:240px;background:#fff;border-radius:12px;padding:12px;box-shadow:0 8px 24px rgba(0,0,0,.12)"><div class="ticket-mono ticket-58mm" id="t-lab" style="width:216px"></div></div>
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"> <button class="btn btn-navy" style="padding:14px;font-size:13px" onclick="printTicketIOS('venta')">🖨️ Imprimir Venta</button> <button class="btn" style="padding:14px;font-size:13px;background:#111;color:#fff" onclick="printTicketIOS('lab')">🖨️ Imprimir Lab</button> </div><div style="font-size:11px;color:#666;text-align:center;margin-top:6px">En iPhone: dale a Guardar PDF Venta / Lab. En la hoja que se abre dale abajo a Guardar PDF → en Imprimir dale Compartir → Guardar en Archivos. Sale solo el ticket en 58mm, sin hoja blanca.</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px"> <button class="btn btn-white" style="padding:10px;font-size:11px" onclick="previewTicketIOS('venta')">📄 Guardar PDF Venta</button> <button class="btn btn-white" style="padding:10px;font-size:11px" onclick="previewTicketIOS('lab')">📄 Guardar PDF Lab</button> </div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+<button class="btn btn-navy" style="display:none !important" onclick="printTicket('venta')">🖨️ Imprimir Venta</button>
+<button class="btn" style="display:none !important;background:#111;color:#fff" onclick="printTicket('lab')">🖨️ Imprimir Lab</button>
+</div>
 <div style="display:none !important;grid-template-columns:1fr 1fr;gap:8px;margin-top:6px">
 <button class="btn btn-white" style="display:none !important" onclick="downloadTicket('venta')">⬇️ Descargar Venta HTML</button>
 <button class="btn btn-white" style="display:none !important" onclick="downloadTicket('lab')">⬇️ Descargar Lab HTML</button>
@@ -550,61 +560,6 @@ document.addEventListener('keydown', (e)=>{
     try{ syncPrintArea(); }catch(err){}
   }
 });
-
-// ===== IMPRESION iOS v69 - ventana sola con solo el ticket =====
-function buildTicketDocHTML(src, titulo){
-  return '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+titulo+'</title><style>@page{margin:0;size:58mm auto} html,body{margin:0!important;padding:0!important;background:#fff!important;width:58mm!important;max-width:58mm!important;height:auto!important} body{font-family:Arial,sans-serif} .ticket-mono{width:58mm!important;max-width:58mm!important;padding:2mm!important;margin:0!important;box-sizing:border-box;color:#000} .ticket-mono *{box-sizing:border-box} .topbar{background:#0f2b46;color:#fff;padding:10px;text-align:center;font-size:12px;font-weight:800} .topbar small{display:block;font-weight:400;font-size:11px} .btn{position:fixed;bottom:0;left:0;right:0;background:#0f2b46;color:#fff;border:0;padding:16px;font-size:15px;font-weight:800} .spacer{height:60px} @media print{ .topbar,.btn,.spacer{display:none!important} html,body{width:58mm!important} }</style></head><body><div class="topbar">'+titulo+' - 58mm<small>Para PDF: Compartir → Guardar en Archivos</small></div><div class="ticket-mono">'+src+'</div><div class="spacer"></div><button class="btn" onclick="window.print()">📄 Guardar PDF / Imprimir</button></body></html>';
-}
-function printTicketIOS(t){
-  try{ showTicket(t); }catch(e){}
-  try{ if(!autoSaveBeforePrint()) return; }catch(e){}
-  let src = '';
-  try{ src = syncPrintArea(); }catch(e){ src = document.getElementById(t==='venta'?'t-venta':'t-lab').innerHTML; }
-  if(!src || !src.trim()){ alert('Primero abre un paciente para que se genere el ticket'); return; }
-  let titulo = t==='venta' ? 'Ticket Venta' : 'Ticket Lab';
-  let w = window.open('', '_blank');
-  if(!w){
-    let f = document.getElementById('iosPrintFrame');
-    if(!f){ f=document.createElement('iframe'); f.id='iosPrintFrame'; f.style.cssText='position:fixed;right:0;bottom:0;width:0;height:0;border:0'; document.body.appendChild(f); }
-    let doc = f.contentDocument || f.contentWindow.document;
-    doc.open(); doc.write(buildTicketDocHTML(src, titulo)); doc.close();
-    setTimeout(()=>{ try{ f.contentWindow.focus(); f.contentWindow.print(); }catch(e){ alert('No se pudo abrir impresión. Dale a Vista previa y luego Compartir > Imprimir'); } }, 500);
-    return;
-  }
-  w.document.open(); w.document.write(buildTicketDocHTML(src, titulo)); w.document.close();
-  try{ w.focus(); }catch(e){}
-}
-function previewTicketIOS(t){
-  try{ showTicket(t); }catch(e){}
-  let src = '';
-  try{ src = syncPrintArea(); }catch(e){ src = document.getElementById(t==='venta'?'t-venta':'t-lab').innerHTML; }
-  if(!src || !src.trim()){ alert('Primero abre un paciente'); return; }
-  let titulo = t==='venta' ? 'Ticket Venta' : 'Ticket Lab';
-  let w = window.open('', '_blank');
-  if(!w){ alert('Permite ventanas emergentes para ver la vista previa'); return; }
-  let docHTML = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+titulo+'</title><style>' +
-  '@page{margin:0;size:58mm auto} ' +
-  'html,body{margin:0!important;padding:0!important;background:#fff!important;width:58mm!important;max-width:58mm!important} ' +
-  'body{font-family:Arial,sans-serif} ' +
-  '.topbar{background:#0f2b46;color:#fff;padding:10px;text-align:center;font-size:12px;font-weight:800} ' +
-  '.topbar small{display:block;font-weight:400;font-size:11px;opacity:.9;margin-top:2px} ' +
-  '.sheet{width:58mm!important;max-width:58mm!important;padding:0!important;margin:0!important;background:#fff} ' +
-  '.ticket-mono{width:58mm!important;max-width:58mm!important;padding:2mm!important;margin:0!important;box-sizing:border-box;color:#000} ' +
-  '.ticket-mono *{box-sizing:border-box} ' +
-  '.btn{position:fixed;bottom:0;left:0;right:0;background:#0f2b46;color:#fff;border:0;padding:16px;font-size:15px;font-weight:800;z-index:10} ' +
-  '.spacer{height:60px} ' +
-  '@media print{ .topbar,.btn,.spacer{display:none!important} html,body{width:58mm!important;height:auto!important} .sheet{width:58mm!important} .ticket-mono{padding:2mm!important} }' +
-  '</style></head><body>' +
-  '<div class="topbar">TICKET 58mm - SOLO TICKET<small>Para guardar PDF: dale abajo a Guardar PDF → en la hoja de imprimir dale Compartir → Guardar en Archivos</small></div>' +
-  '<div class="sheet"><div class="ticket-mono">'+src+'</div></div><div class="spacer"></div>' +
-  '<button class="btn" onclick="window.print()">📄 Guardar PDF / Imprimir</button>' +
-  '</body></html>';
-  w.document.open(); w.document.write(docHTML); w.document.close();
-}
-function savePDFIOS(t){
-  previewTicketIOS(t);
-}
-
 function printTicket(t){
   // MISMO PROCESO QUE ARCHIVO ORIGINAL: guardar auto + mostrar ticket + window.print
   showTicket(t);
