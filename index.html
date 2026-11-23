@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f2b46">
-<title>v71 - Centro Óptico Rosales v71 IMPRESION ORIGINAL</title>
+<title>v72 - Centro Óptico Rosales v72 SEGURA</title>
 <style>
 :root{--navy:#0f2b46;--navy2:#173a5e;--gold:#c9a86a;--bg:#f4f5f7;--card:#fff;--border:#e5e7eb;--muted:#6b7b8d;--faint:#9aa8b8;--danger:#c03a2b}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--navy);font-family:Inter,system-ui,sans-serif;height:100%}
@@ -126,7 +126,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 <!-- FORM -->
 <div id="panelForm" style="overflow:auto;background:var(--bg)" class="no-print smooth mobile-panel">
 <header style="height:56px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:10">
-<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales <span style='font-size:10px;background:#22c55e;color:#fff;padding:2px 6px;border-radius:999px;vertical-align:middle'>v71</span></div><div style="display:none">v23 leyenda oculta</div></div>
+<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales <span style='font-size:10px;background:#22c55e;color:#fff;padding:2px 6px;border-radius:999px;vertical-align:middle'>v72</span></div><div style="display:none">v23 leyenda oculta</div></div>
 <div style="display:flex;gap:6px"><button class="btn btn-gold" onclick="newClient()">Nuevo</button><span id="cloudStatus" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;font-size:11px"><span id="cloudDot" class="cloud-dot local"></span><span id="cloudText">Modo Local</span></span><button id="btnNube" class="btn btn-white" style="font-size:11px;padding:8px 10px" onclick="openCloudSetup()">☁️ Nube</button><button class="btn btn-white" onclick="document.getElementById('importFile').click()" style="font-size:11px;padding:8px 10px">📂 Importar</button><input type="file" id="importFile" accept=".json,.csv,.xls,.xlsx,.html" style="display:none" onchange="importOldFile(event)"><button class="btn btn-white" onclick="exportProfesional()">Exportar a Excel</button><button id="btnPapelera" class="btn btn-white" onclick="openTrash()" style="font-size:11px;padding:8px 10px">🗑️ Papelera</button></div>
 </header>
 
@@ -243,7 +243,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
     <div style="display:flex;gap:8px;margin-top:10px"><button class="btn btn-navy" style="flex:1" onclick="alert('Guardando URL...'); saveCloudUrl()">💾 Guardar y Conectar</button><button class="btn btn-white" onclick="alert('Probando conexion...'); testCloudFromInput()">🔄 Probar esta URL</button><button class="btn btn-white" onclick="disconnectCloud()">Desconectar</button></div>
     <div id="cloudMsg" style="font-size:12px;margin-top:8px;color:#0f2b46"></div>
     <label style="font-size:11px;font-weight:700;margin-top:14px;display:block">CÓDIGO PARA FIREBASE (copia todo y pégalo en Firebase)</label>
-    <textarea id="appsScriptCode" readonly style="height:180px;font-family:monospace;font-size:11px;margin-top:6px" onclick="this.select()">Tu Firebase ya esta puesta. En Firebase > Reglas pon { ".read": true, ".write": true } y dale Publicar.</textarea>
+    <textarea id="appsScriptCode" readonly style="height:180px;font-family:monospace;font-size:11px;margin-top:6px" onclick="this.select()">Tu Firebase ya esta puesta. En Firebase > Realtime Database > Reglas pon { "rules": { ".read": "auth != null", ".write": "auth != null" } } y dale Publicar. Y en Authentication > Metodo de acceso activa Anonimo.</textarea>
     <button class="btn btn-white" style="margin-top:8px;width:100%" onclick="copyAppsScript()">📋 Copiar pasos</button>
     <p style="font-size:11px;color:#888">Sin URL, la app sigue funcionando en Modo Local y guarda en este dispositivo. Con URL, sincroniza cada 10 segundos entre todos los dispositivos.</p>
   </div>
@@ -251,10 +251,34 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 
 <div id="print-area" style="display:none"><div class="ticket-mono ticket-58mm" id="print-content" style="width:58mm"></div></div>
 
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
 <script>
 // FIREBASE al inicio para evitar TDZ
 var FIREBASE_URL = 'https://centro-optico-rosales-4b197-default-rtdb.firebaseio.com';
 var CLOUD_URL = FIREBASE_URL;
+  // ===== SEGURIDAD v72 - Firebase Auth anonimo: la URL sola ya no sirve =====
+  var FIREBASE_CONFIG = { apiKey: "AIzaSyDKHzLs-r4Fq3RVonGAAggMhJz9IX5s1JU", authDomain: "centro-optico-rosales-4b197.firebaseapp.com", databaseURL: "https://centro-optico-rosales-4b197-default-rtdb.firebaseio.com", projectId: "centro-optico-rosales-4b197", storageBucket: "centro-optico-rosales-4b197.firebasestorage.app", messagingSenderId: "249757865094", appId: "1:249757865094:web:abf82052d1700690dc6d07" };
+  var firebaseAuthToken = '';
+  var _firebaseAuthPromise = null;
+  function ensureFirebaseAuth(){
+    if(_firebaseAuthPromise) return _firebaseAuthPromise;
+    _firebaseAuthPromise = (async function(){
+      try{
+        if(typeof firebase === 'undefined' || !firebase.auth){ return ''; }
+        if(!firebase.apps || !firebase.apps.length){ firebase.initializeApp(FIREBASE_CONFIG); }
+        var auth = firebase.auth();
+        if(auth.currentUser){ try{ firebaseAuthToken = await auth.currentUser.getIdToken(true); }catch(e){} return firebaseAuthToken; }
+        var cred = await auth.signInAnonymously();
+        if(cred && cred.user){ firebaseAuthToken = await cred.user.getIdToken(); }
+        try{ auth.onIdTokenChanged(async function(u){ if(u){ try{ firebaseAuthToken = await u.getIdToken(); }catch(e){} } }); }catch(e){}
+        return firebaseAuthToken;
+      }catch(e){ console.log('Firebase Auth anonimo no disponible (sigue en local):', e); return ''; }
+    })();
+    return _firebaseAuthPromise;
+  }
+  try{ document.addEventListener('DOMContentLoaded', function(){ ensureFirebaseAuth(); }); }catch(e){}
+  try{ ensureFirebaseAuth(); }catch(e){}
 
 // ===== SEGURIDAD v59 - LOGIN =====
 var USERS_KEY = 'rosales_usuarios_v59';
@@ -1119,6 +1143,7 @@ load(); fecha.value=today(); renderList(); onFormChange();
 
 try{ localStorage.setItem('rosales_firebase_url', FIREBASE_URL); }catch(e){}
 async function cloudPull2(){
+  try{ await ensureFirebaseAuth(); }catch(e){}
   let inp = document.getElementById('cloudUrlInput');
   let _fbDefault = 'https://centro-optico-rosales-4b197-default-rtdb.firebaseio.com';
   let _fbCur = _fbDefault; try{ if(typeof FIREBASE_URL !== 'undefined' && FIREBASE_URL) _fbCur = FIREBASE_URL; }catch(e){}
@@ -1128,10 +1153,10 @@ async function cloudPull2(){
   setCloudUI('sync','Conectando Firebase...');
   let msg = document.getElementById('cloudMsg');
   try{
-    let url = FIREBASE_URL.replace(/\/$/,'') + '/centro_optico.json?t=' + Date.now();
+    let url = FIREBASE_URL.replace(/\/$/,'') + '/centro_optico.json?auth=' + (firebaseAuthToken||'') + '&t=' + Date.now();
     if(msg) msg.textContent = 'Probando Firebase...\n' + url;
     let r = await fetch(url);
-    if(!r.ok) throw new Error('Firebase respondio ' + r.status + '. Revisa Reglas: { ".read": true, ".write": true } y Publicar.');
+    if(!r.ok) throw new Error('Firebase respondio ' + r.status + '. Revisa Reglas: pon { "rules": { ".read": "auth != null", ".write": "auth != null" } } y Publicar, y activa Authentication > Metodo de acceso > Anonimo.');
     let d = await r.json();
     if(d && Array.isArray(d.patients)){
       patients = d.patients.map(x=>({...x, armazon: typeof x.armazon==='string'?{modelo:x.armazon}:x.armazon||{modelo:''}, estado: (x.estado && x.estado!=='undefined' ? x.estado : 'pendiente')}));
@@ -1171,11 +1196,12 @@ async function cloudPull2(){
   }
 }
 async function cloudPush(){
+  try{ await ensureFirebaseAuth(); }catch(e){}
   if(!FIREBASE_URL) return;
   if(Date.now()-lastPush < 2000) return;
   lastPush = Date.now();
   try{
-    let url = FIREBASE_URL.replace(/\/$/,'') + '/centro_optico.json';
+    let url = FIREBASE_URL.replace(/\/$/,'') + '/centro_optico.json' + (firebaseAuthToken ? '?auth=' + firebaseAuthToken : '');
     await fetch(url, {method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify({patients: patients, trash: trash, counter: counter, usuarios: (function(){ try{ return JSON.parse(localStorage.getItem(USERS_KEY)||'[]'); }catch(e){ return [{user:'admin', pass:'rosales2026', role:'admin'}]; } })()})});
     cloudOnline=true; setCloudUI('online','Nube Conectada - '+patients.length+' pacientes');
   }catch(e){ console.log('push error', e); }
