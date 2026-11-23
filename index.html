@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f2b46">
-<title>v74 - Centro Óptico Rosales v74 SEGURA FIX APIKEY</title>
+<title>v75 - Centro Óptico Rosales v75 FINAL SEGURA</title>
 <style>
 :root{--navy:#0f2b46;--navy2:#173a5e;--gold:#c9a86a;--bg:#f4f5f7;--card:#fff;--border:#e5e7eb;--muted:#6b7b8d;--faint:#9aa8b8;--danger:#c03a2b}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--navy);font-family:Inter,system-ui,sans-serif;height:100%}
@@ -126,7 +126,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 <!-- FORM -->
 <div id="panelForm" style="overflow:auto;background:var(--bg)" class="no-print smooth mobile-panel">
 <header style="height:56px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:10">
-<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales <span style='font-size:10px;background:#22c55e;color:#fff;padding:2px 6px;border-radius:999px;vertical-align:middle'>v74</span></div><div style="display:none">v23 leyenda oculta</div></div>
+<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales <span style='font-size:10px;background:#22c55e;color:#fff;padding:2px 6px;border-radius:999px;vertical-align:middle'>v75</span></div><div style="display:none">v23 leyenda oculta</div></div>
 <div style="display:flex;gap:6px"><button class="btn btn-gold" onclick="newClient()">Nuevo</button><span id="cloudStatus" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;font-size:11px"><span id="cloudDot" class="cloud-dot local"></span><span id="cloudText">Modo Local</span></span><button id="btnNube" class="btn btn-white" style="font-size:11px;padding:8px 10px" onclick="openCloudSetup()">☁️ Nube</button><button class="btn btn-white" onclick="document.getElementById('importFile').click()" style="font-size:11px;padding:8px 10px">📂 Importar</button><input type="file" id="importFile" accept=".json,.csv,.xls,.xlsx,.html" style="display:none" onchange="importOldFile(event)"><button class="btn btn-white" onclick="exportProfesional()">Exportar a Excel</button><button id="btnPapelera" class="btn btn-white" onclick="openTrash()" style="font-size:11px;padding:8px 10px">🗑️ Papelera</button></div>
 </header>
 
@@ -241,9 +241,9 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
     <label style="font-size:11px;font-weight:700">URL DE TU APP SCRIPT (termina en firebaseio.com)</label>
     <input id="cloudUrlInput" placeholder="https://script.google.com/macros/s/...firebaseio.com" style="margin-top:6px">
     <div style="display:flex;gap:8px;margin-top:10px"><button class="btn btn-navy" style="flex:1" onclick="alert('Guardando URL...'); saveCloudUrl()">💾 <div style="margin-top:12px">
-  <label style="font-weight:700;font-size:13px">API KEY DE TU PROYECTO (EMPIEZA CON AIza...)</label>
+  <label style="font-weight:700;font-size:13px">API KEY YA GUARDADA ADENTRO DE LA APP - NO NECESITAS PEGAR NADA</label>
   <input id="firebaseApiKeyInput" type="text" placeholder="Pega aqui la apiKey de Firebase > Configuracion del proyecto" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:8px;margin-top:6px" />
-  <div style="font-size:12px;color:#666;margin-top:4px">Si la dejas vacia usa la que trae la app. Si te da error api-key-not-valid, aqui pega la correcta y dale Guardar y Conectar.</div>
+  <div style="font-size:12px;color:#666;margin-top:4px">La llave correcta ya viene dentro de la v75. No necesitas pegar nada. Aunque borres historial, seguira conectando.</div>
 </div>
 <div style="margin-top:10px">
   <button onclick="saveApiKeyAndReconnect()" style="width:100%;padding:10px;border-radius:8px;border:1px solid #0a2a4a;background:#0a2a4a;color:#fff;font-weight:700;cursor:pointer">Guardar apiKey y Reconectar</button>
@@ -265,8 +265,8 @@ Guardar y Conectar</button><button class="btn btn-white" onclick="alert('Proband
 // FIREBASE al inicio para evitar TDZ
 var FIREBASE_URL = 'https://centro-optico-rosales-4b197-default-rtdb.firebaseio.com';
 var CLOUD_URL = FIREBASE_URL;
-  // ===== SEGURIDAD v74 - Firebase Auth anonimo: la URL sola ya no sirve =====
-  var FIREBASE_CONFIG = { apiKey: (function(){ try{ return localStorage.getItem("cor_firebase_apiKey") || "AIzaSyDKHzLs-r4Fq3RVonGAAggMhJz9IX5s1JU"; }catch(e){ return "AIzaSyDKHzLs-r4Fq3RVonGAAggMhJz9IX5s1JU"; } })(), authDomain: "centro-optico-rosales-4b197.firebaseapp.com", databaseURL: "https://centro-optico-rosales-4b197-default-rtdb.firebaseio.com", projectId: "centro-optico-rosales-4b197", storageBucket: "centro-optico-rosales-4b197.firebasestorage.app", messagingSenderId: "249757865094", appId: "1:249757865094:web:abf82052d1700690dc6d07" };
+  // ===== SEGURIDAD v75 - Firebase Auth anonimo: la URL sola ya no sirve =====
+  var FIREBASE_CONFIG = { apiKey: (function(){ try{ return localStorage.getItem("cor_firebase_apiKey") || "AIzaSyDKHzLs-r4Fq3RVonGAAggMhJz9IX5slJU"; }catch(e){ return "AIzaSyDKHzLs-r4Fq3RVonGAAggMhJz9IX5slJU"; } })(), authDomain: "centro-optico-rosales-4b197.firebaseapp.com", databaseURL: "https://centro-optico-rosales-4b197-default-rtdb.firebaseio.com", projectId: "centro-optico-rosales-4b197", storageBucket: "centro-optico-rosales-4b197.firebasestorage.app", messagingSenderId: "249757865094", appId: "1:249757865094:web:abf82052d1700690dc6d07" };
   var firebaseAuthToken = '';
   var _firebaseAuthPromise = null;
 
