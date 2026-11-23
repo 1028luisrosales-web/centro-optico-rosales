@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0f2b46">
-<title>v72 - Centro Óptico Rosales v72 SEGURA</title>
+<title>v73 - Centro Óptico Rosales v73 SEGURA FIX</title>
 <style>
 :root{--navy:#0f2b46;--navy2:#173a5e;--gold:#c9a86a;--bg:#f4f5f7;--card:#fff;--border:#e5e7eb;--muted:#6b7b8d;--faint:#9aa8b8;--danger:#c03a2b}
 *{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--navy);font-family:Inter,system-ui,sans-serif;height:100%}
@@ -126,7 +126,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 <!-- FORM -->
 <div id="panelForm" style="overflow:auto;background:var(--bg)" class="no-print smooth mobile-panel">
 <header style="height:56px;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 16px;position:sticky;top:0;z-index:10">
-<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales <span style='font-size:10px;background:#22c55e;color:#fff;padding:2px 6px;border-radius:999px;vertical-align:middle'>v72</span></div><div style="display:none">v23 leyenda oculta</div></div>
+<div><div style="font-family:Instrument Serif,serif;font-size:18px">Centro Óptico Rosales <span style='font-size:10px;background:#22c55e;color:#fff;padding:2px 6px;border-radius:999px;vertical-align:middle'>v73</span></div><div style="display:none">v23 leyenda oculta</div></div>
 <div style="display:flex;gap:6px"><button class="btn btn-gold" onclick="newClient()">Nuevo</button><span id="cloudStatus" style="display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);padding:6px 10px;border-radius:999px;font-size:11px"><span id="cloudDot" class="cloud-dot local"></span><span id="cloudText">Modo Local</span></span><button id="btnNube" class="btn btn-white" style="font-size:11px;padding:8px 10px" onclick="openCloudSetup()">☁️ Nube</button><button class="btn btn-white" onclick="document.getElementById('importFile').click()" style="font-size:11px;padding:8px 10px">📂 Importar</button><input type="file" id="importFile" accept=".json,.csv,.xls,.xlsx,.html" style="display:none" onchange="importOldFile(event)"><button class="btn btn-white" onclick="exportProfesional()">Exportar a Excel</button><button id="btnPapelera" class="btn btn-white" onclick="openTrash()" style="font-size:11px;padding:8px 10px">🗑️ Papelera</button></div>
 </header>
 
@@ -257,26 +257,35 @@ label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:upperca
 // FIREBASE al inicio para evitar TDZ
 var FIREBASE_URL = 'https://centro-optico-rosales-4b197-default-rtdb.firebaseio.com';
 var CLOUD_URL = FIREBASE_URL;
-  // ===== SEGURIDAD v72 - Firebase Auth anonimo: la URL sola ya no sirve =====
+  // ===== SEGURIDAD v73 - Firebase Auth anonimo: la URL sola ya no sirve =====
   var FIREBASE_CONFIG = { apiKey: "AIzaSyDKHzLs-r4Fq3RVonGAAggMhJz9IX5s1JU", authDomain: "centro-optico-rosales-4b197.firebaseapp.com", databaseURL: "https://centro-optico-rosales-4b197-default-rtdb.firebaseio.com", projectId: "centro-optico-rosales-4b197", storageBucket: "centro-optico-rosales-4b197.firebasestorage.app", messagingSenderId: "249757865094", appId: "1:249757865094:web:abf82052d1700690dc6d07" };
   var firebaseAuthToken = '';
   var _firebaseAuthPromise = null;
-  function ensureFirebaseAuth(){
-    if(_firebaseAuthPromise) return _firebaseAuthPromise;
+  var firebaseAuthError = '';
+  function ensureFirebaseAuth(force){
+    if(_firebaseAuthPromise && !force) return _firebaseAuthPromise;
     _firebaseAuthPromise = (async function(){
       try{
-        if(typeof firebase === 'undefined' || !firebase.auth){ return ''; }
+        firebaseAuthError = '';
+        if(typeof firebase === 'undefined' || !firebase.auth){ firebaseAuthError = 'No cargo SDK de Firebase (revisa internet)'; return ''; }
         if(!firebase.apps || !firebase.apps.length){ firebase.initializeApp(FIREBASE_CONFIG); }
         var auth = firebase.auth();
-        if(auth.currentUser){ try{ firebaseAuthToken = await auth.currentUser.getIdToken(true); }catch(e){} return firebaseAuthToken; }
+        if(auth.currentUser){ try{ firebaseAuthToken = await auth.currentUser.getIdToken(true); }catch(e){} if(firebaseAuthToken) return firebaseAuthToken; }
         var cred = await auth.signInAnonymously();
         if(cred && cred.user){ firebaseAuthToken = await cred.user.getIdToken(); }
         try{ auth.onIdTokenChanged(async function(u){ if(u){ try{ firebaseAuthToken = await u.getIdToken(); }catch(e){} } }); }catch(e){}
         return firebaseAuthToken;
-      }catch(e){ console.log('Firebase Auth anonimo no disponible (sigue en local):', e); return ''; }
+      }catch(e){
+        firebaseAuthError = (e && e.message) ? e.message : String(e);
+        console.log('Firebase Auth error:', e);
+        // Si falla, limpiar promesa para poder reintentar al darle a Nube
+        _firebaseAuthPromise = null;
+        return '';
+      }
     })();
     return _firebaseAuthPromise;
   }
+  function retryFirebaseAuth(){ try{ firebaseAuthToken=''; }catch(e){} return ensureFirebaseAuth(true); }
   try{ document.addEventListener('DOMContentLoaded', function(){ ensureFirebaseAuth(); }); }catch(e){}
   try{ ensureFirebaseAuth(); }catch(e){}
 
@@ -1156,7 +1165,13 @@ async function cloudPull2(){
     let url = FIREBASE_URL.replace(/\/$/,'') + '/centro_optico.json?auth=' + (firebaseAuthToken||'') + '&t=' + Date.now();
     if(msg) msg.textContent = 'Probando Firebase...\n' + url;
     let r = await fetch(url);
-    if(!r.ok) throw new Error('Firebase respondio ' + r.status + '. Revisa Reglas: pon { "rules": { ".read": "auth != null", ".write": "auth != null" } } y Publicar, y activa Authentication > Metodo de acceso > Anonimo.');
+    if(r.status === 401 || r.status === 403){
+      try{ await retryFirebaseAuth(); }catch(e){}
+      let url2 = FIREBASE_URL.replace(/\/$/,'') + '/centro_optico.json?auth=' + (firebaseAuthToken||'') + '&t=' + Date.now();
+      r = await fetch(url2);
+      if(!r.ok && firebaseAuthError){ throw new Error('Firebase Auth: ' + firebaseAuthError + ' | Activa Authentication > Anonimo > Habilitar y Guardar'); }
+    }
+    if(!r.ok) throw new Error('Firebase respondio ' + r.status + (firebaseAuthError ? ' | Auth: ' + firebaseAuthError : '') + '. Revisa Reglas: pon { "rules": { ".read": "auth != null", ".write": "auth != null" } } y Publicar, y activa Authentication > Metodo de acceso > Anonimo.');
     let d = await r.json();
     if(d && Array.isArray(d.patients)){
       patients = d.patients.map(x=>({...x, armazon: typeof x.armazon==='string'?{modelo:x.armazon}:x.armazon||{modelo:''}, estado: (x.estado && x.estado!=='undefined' ? x.estado : 'pendiente')}));
